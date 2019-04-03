@@ -19,7 +19,7 @@ class Scene{
         camera.attachControl(canvas, false);
         */
 
-       var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-100, 400, 0), scene);
+       var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-100, 200, 0), scene);
        
                                         
        // This targets the camera to scene origin
@@ -54,6 +54,8 @@ class Scene{
         var ground = new BABYLON.Mesh.CreateGround(name, width, length, divs, scene);
         ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
         ground.receiveShadows = true;
+        ground.position.x = length/2;
+        ground.position.z = width/2;
         return ground;
     }
 }
@@ -84,7 +86,7 @@ class Obstaculo extends Scene{
 		mesh.material = obsWireMat;
         //mesh.position.y =1;
 
-        mesh.position = new BABYLON.Vector3(getRndInteger(-500, 500), 1, getRndInteger(-500, 500));
+        mesh.position = new BABYLON.Vector3(getRndInteger(1, 1), 1, getRndInteger(-5, 5));
         var shadowGenerator = this.generateShadows();
         shadowGenerator.addShadowCaster(mesh);
 
@@ -131,7 +133,7 @@ class Particula extends Scene {
         mesh.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
         mesh.material = sphereMat;
         //mesh.position.y =1;
-        mesh.position = new BABYLON.Vector3(getRndInteger(-100, 100), 1, getRndInteger(-100, 100));
+        mesh.position = new BABYLON.Vector3(getRndInteger(-1, 10), 1, getRndInteger(-10, 10));
         var shadowGenerator = this.generateShadows();
         shadowGenerator.addShadowCaster(mesh);
 
@@ -139,7 +141,6 @@ class Particula extends Scene {
         
         return mesh;
     }
-
 
     crearToro(){
         var torusMat = new BABYLON.StandardMaterial("texture1", scene);
@@ -177,7 +178,6 @@ class Particula extends Scene {
     }
 
     setPosition(x = 0, y = 0, z = 0){
-        //this.mesh.position = new BABYLON.Vector3(x, y, z);
         this.mesh.position.x = x;
         this.mesh.position.y = y;
         this.mesh.position.z = z;
@@ -185,32 +185,18 @@ class Particula extends Scene {
     }
     getPosition(){
         return new BABYLON.Vector3(this.mesh.position.x, this.mesh.position.y,this.mesh.position.z);
-        //return console.log(`Position x: ${this.mesh.position.x}, y: ${this.mesh.position.y}, z: ${this.mesh.position.z}`);
     }
     setCoordinates(i){
         var cuadrante = Math.floor(Math.random() *(5 - 1)) + 1;
-        //var cuadrante = 2;
         if(i % 10 === 0){
             if(cuadrante === 1){
                 this.moveCuadrante1(true);
-                //this.moveCuadrante2(false);
-                //this.moveCuadrante3(false);
-                //this.moveCuadrante4(false);
             }else if(cuadrante === 2){
                 this.moveCuadrante2(true);
-                //this.moveCuadrante1(false);
-                //this.moveCuadrante3(false);
-                //this.moveCuadrante4(false);
             }else if(cuadrante === 3){
                 this.moveCuadrante3(true);
-                //this.moveCuadrante1(false);
-                //this.moveCuadrante2(false);
-                //this.moveCuadrante4(false);
             }else if(cuadrante === 4){
                 this.moveCuadrante4(true);
-                //this.moveCuadrante1(false);
-                //this.moveCuadrante2(false);
-                //this.moveCuadrante3(false);
             }
         }
     }
@@ -239,9 +225,6 @@ class Particula extends Scene {
 
     
 }
-
-
-
 
 
 function getRndInteger(min, max){
