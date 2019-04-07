@@ -5,7 +5,7 @@ var scene = new BABYLON.Scene(engine);
 
 
 var groundName = 'ground1';
-var groundWidth = 100, groundHeight = 100, divs = 2;
+var groundWidth = 100, groundHeight = 100, divs = 1;
 
 var sistParticulas = new Array();
 var tiempo = 0;
@@ -44,35 +44,21 @@ window.addEventListener('DOMContentLoaded', function(){
     escena.createLights();
     escena.generateShadows();
     escena.createGround(groundName, groundWidth, groundHeight, divs);
-    
-    var ob1 = new Obstaculo(escena.scene,'o1',5,Math.floor(Math.random()*(40 - (-30) + 1) + 1));
-    ob1.setPosition(Math.floor(Math.random()*(200 - (-200) + 1)) + 1,1,Math.floor(Math.random()*(200 - (-200) + 1)));
-    var ob2 = new Obstaculo(escena.scene,'o1',5,Math.floor(Math.random()*(40 - (-30) + 1) + 1));
-    ob2.setPosition(Math.floor(Math.random()*(200 - (-200) + 1)) + 1,1,Math.floor(Math.random()*(200 - (-200) + 1)));
-    var ob3 = new Obstaculo(escena.scene,'o1',5,Math.floor(Math.random()*(40 - (-30) + 1) + 1));
-    ob3.setPosition(Math.floor(Math.random()*(200 - (-200) + 1)) + 1,1,Math.floor(Math.random()*(200 - (-200) + 1)));
-    //setInterval(generadorDeParticulas(escena), 1000);
-
-    var mesh = new BABYLON.Mesh.CreateSphere(name, this.subdivs, this.size, scene);
-    mesh.physicsImpostor = new BABYLON.PhysicsImpostor(mesh, BABYLON.PhysicsImpostor.SphereImpostor, {mass: Math.random(), restitution: 0}, scene);
-    mesh.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
-    //mesh.position.y =1;
-    mesh.position = new BABYLON.Vector3(groundWidth/2,1,groundHeight/2);
-    mesh.receiveShadows = true;
 
     var particula = new Particula(escape.scene, 'PPP', 16, 2);
+    particula.getPosition();
 
-    var velX = 0.03, velY = 0.03;
-    var t= 0.0;
+
+    //var theta = 2 * Math.PI * Math.random();
+    //var phi = Math.PI - 2 * Math.PI * Math.random();
+    //var xi = Math.sin(phi) * Math.cos(theta);
+    var i=0;
+    
     escena.scene.registerBeforeRender(function(){
-        // py = 25.0 + 10.0 * Math.sin(t / 4.0);
-        px = 0.5 * Math.cos(t / 3.5);
-        py = 0;
-        pz = 0.5 * Math.cos(t / 4.5);
-        mesh.position.x += px;
-        mesh.position.z +=  pz;
-
-        t += 0.1;
+        var moveDelta = new BABYLON.Vector3(0, 0, i);
+        i+= 0.001;
+        particula.avanzar(moveDelta);
+        particula.setParticleLimits(groundWidth, groundHeight);
     });
       
     escena.engine.runRenderLoop(function(){

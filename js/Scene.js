@@ -8,17 +8,6 @@ class Scene{
     createScene(){
         var gravityVector = new BABYLON.Vector3(0,-9.81, 0);
         var physicsPlugin = new BABYLON.CannonJSPlugin();
-        /*
-        var camera = new BABYLON.ArcRotateCamera('camera1', 0, 0, 10, new BABYLON.Vector3(0, 0, 0), scene);
-        camera.lowerRadiusLimit = 30;
-        camera.lowerBetaLimit = 0;
-        camera.upperBetaLimit = Math.PI*(4/9);
-        camera.lowerAlphaLimit = Math.PI/6;
-        camera.upperAlphaLimit = Math.PI*(5/6);
-        camera.setPosition(new BABYLON.Vector3(0,0,20));
-        camera.attachControl(canvas, false);
-        */
-
        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-100, 200, 0), scene);
        
                                         
@@ -56,54 +45,12 @@ class Scene{
         ground.receiveShadows = true;
         ground.position.x = length/2;
         ground.position.z = width/2;
+
+        showNormals(ground, 0.25, new BABYLON.Color3(1, 0, 0))
         return ground;
     }
 }
 
-
-class Obstaculo extends Scene{
-	constructor(scene, name, subdivs, size, px, py, pz){
-        super(scene);
-        this.name = name;
-        this.subdivs = subdivs;
-        this.size = size;
-        this.mesh = this.crearObstaculo();
-        
-    }
-	
-	crearObstaculo(){
-		var obsWireMat = new BABYLON.StandardMaterial("obstaculomat", scene);
-		
-		//Material y Color
-		obsWireMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
-        obsWireMat.specularColor = new BABYLON.Color3(0, 0, 0);
-        obsWireMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
-        obsWireMat.wireframe = true;
-		//Mesh
-		var mesh = new BABYLON.Mesh.CreateSphere(name, this.subdivs, this.size, scene);
-        //mesh.physicsImpostor = new BABYLON.PhysicsImpostor(mesh, BABYLON.PhysicsImpostor.SphereImpostor, {mass: Math.random(), restitution: Math.random()}, scene);
-		
-		mesh.material = obsWireMat;
-        //mesh.position.y =1;
-
-        mesh.position = new BABYLON.Vector3(getRndInteger(1, 1), 1, getRndInteger(-5, 5));
-        var shadowGenerator = this.generateShadows();
-        shadowGenerator.addShadowCaster(mesh);
-
-        mesh.receiveShadows = true;
-        
-        return mesh;
-	}
-	
-	setPosition(x = 0, y = 0, z = 0){
-        this.mesh.position = new BABYLON.Vector3(x, y, z);
-    }
-    getPosition(){
-        return new BABYLON.Vector3(this.mesh.position.x, this.mesh.position.y,this.mesh.position.z);
-        //return console.log(`Position x: ${this.mesh.position.x}, y: ${this.mesh.position.y}, z: ${this.mesh.position.z}`);
-    }
-
-}
 
 
 class Particula extends Scene {
@@ -136,7 +83,8 @@ class Particula extends Scene {
         mesh.position = new BABYLON.Vector3(getRndInteger(-1, 10), 1, getRndInteger(-10, 10));
         var shadowGenerator = this.generateShadows();
         shadowGenerator.addShadowCaster(mesh);
-
+        var localOrigin= localAxes(3);
+        localOrigin.parent = mesh;
         mesh.receiveShadows = true;
         
         return mesh;
@@ -184,8 +132,36 @@ class Particula extends Scene {
         
     }
     getPosition(){
+        var pX = this.mesh.position.x;
+        var pY = this.mesh.position.y;
+        var pZ = this.mesh.position.z;
+        console.log(`${pX}, ${pY}, ${pZ}`)
         return new BABYLON.Vector3(this.mesh.position.x, this.mesh.position.y,this.mesh.position.z);
+        
     }
+
+	transformPerQuat(vec) {
+		var mymatrix = new BABYLON.Matrix();
+		this.mesh.rotationQuaternion.toRotationMatrix(mymatrix);
+		return BABYLON.Vector3.TransformNormal(vec, mymatrix);
+	}
+
+    rotateParticle(rotateStep){
+        this.mesh.rotate(BABYLON.Axis.Y, rotateStep, BABYLON.Space.WORLD);
+    }
+
+    avanzar(moveVector){
+        this.mesh.moveWithCollisions(this.transformPerQuat(moveVector));
+    }
+
+    setParticleLimits(groundWidth, groundHeight){
+       if(this.mesh.position.z >= groundHeight || this.mesh.position.z < 0){
+           this.rotateParticle(180);
+       }else if(this.mesh.position.x >= groundWidth || this.mesh.position.x < 0){
+        this.rotateParticle(180);
+       }
+    }
+
     setCoordinates(i){
         var cuadrante = Math.floor(Math.random() *(5 - 1)) + 1;
         if(i % 10 === 0){
@@ -226,8 +202,54 @@ class Particula extends Scene {
     
 }
 
+function localAxes(size) {
+      var pilot_local_axisX = BABYLON.Mesh.CreateLines("pilot_local_axisX", [ 
+      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
+      new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+      ], scene);
+    pilot_local_axisX.color = new BABYLON.Color3(1, 0, 0);
 
+    pilot_local_axisY = BABYLON.Mesh.CreateLines("pilot_local_axisY", [
+        new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
+        new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
+	], scene);
+    pilot_local_axisY.color = new BABYLON.Color3(0, 1, 0);
+
+    var pilot_local_axisZ = BABYLON.Mesh.CreateLines("pilot_local_axisZ", [
+        new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
+        new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
+        ], scene);
+    pilot_local_axisZ.color = new BABYLON.Color3(0, 0, 1);
+
+	var local_origin = BABYLON.MeshBuilder.CreateBox("local_origin", {size:1}, scene);
+	local_origin.isVisible = false;
+	
+	pilot_local_axisX.parent = local_origin;
+  	pilot_local_axisY.parent = local_origin;
+  	pilot_local_axisZ.parent = local_origin; 
+	  
+    return local_origin;
+	
+  }
+	
 function getRndInteger(min, max){
     return Math.floor(Math.random()*(max - min + 1)) + 1;
 }
 
+function showNormals(mesh, size, color, sc) {
+    var normals = mesh.getVerticesData(BABYLON.VertexBuffer.NormalKind);
+    var positions = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);      
+    color = color || BABYLON.Color3.White();
+    sc = sc || scene;
+    size = size || 1;
+
+    var lines = [];
+    for (var i = 0; i < normals.length; i += 3) {
+        var v1 = BABYLON.Vector3.FromArray(positions, i);
+        var v2 = v1.add(BABYLON.Vector3.FromArray(normals, i).scaleInPlace(size));
+        lines.push([v1.add(mesh.position), v2.add(mesh.position)]);
+    }
+    var normalLines = BABYLON.MeshBuilder.CreateLineSystem("normalLines", {lines: lines}, sc);
+    normalLines.color = color;
+    return normalLines;
+}
