@@ -43,7 +43,8 @@ window.addEventListener('DOMContentLoaded', function(){
     escena.createScene();
     escena.createLights();
     escena.generateShadows();
-    escena.createGround(groundName, groundWidth, groundHeight, divs);
+    //escena.createGround(groundName, groundWidth, groundHeight, divs);
+    var tiledGround = escena.createTiledGround("tiledGround");
 
     var particula = new Particula(escape.scene, 'PPP', 16, 2);
     particula.getPosition();
