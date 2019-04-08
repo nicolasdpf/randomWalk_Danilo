@@ -10,8 +10,9 @@ var groundWidth = 100, groundHeight = 100, divs = 1;
 var sistParticulas = new Array();
 var tiempo = 0;
 var iParticles = 0;
-
-
+//Variables para calcular el tiempo general de la simulación
+var s=0;
+var m=0;
 /*
 function generadorDeParticulas(escena){
     if(tiempo % 60 == 0){
@@ -57,16 +58,29 @@ window.addEventListener('DOMContentLoaded', function(){
     
     escena.scene.registerBeforeRender(function(){
         var moveDelta = new BABYLON.Vector3(0, 0, i);
-        i+= 0.001;
+        i = 0.511;
         particula.avanzar(moveDelta);
         particula.setParticleLimits(groundWidth, groundHeight);
+        text1.text =stopwatch(tiempo);
+        tiempo ++;
+        console.log(m);
     });
       
+    var text1 = new BABYLON.GUI.TextBlock();
+    var text2 = new BABYLON.GUI.TextBlock();
+    text1.color = "white";
+    text1.fontSize = 24;
+    
     escena.engine.runRenderLoop(function(){
-        tiempo ++;
-        //generadorDeParticulas(escena);
         escena.scene.render();
     });
+    
+    // GUI
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    text1.textHorizontalAlignment = 50;
+    text1.textVerticalAlignment =0;
+
+    advancedTexture.addControl(text1);   
 
     showAxis(10);
 });
@@ -107,4 +121,27 @@ var showAxis = function(size) {
     var zChar = makeTextPlane("Z", "blue", size / 10);
     zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
 };
+
+
+function stopwatch(i){
+    var fps = i;
+    var h;
+
+
+    if(fps % 60 === 0){
+        s += 1;
+    } else if(s >= 60){
+        m += 1;
+        s = 0;
+    }
+    if(m<10 && s < 10){
+        return `0${m}:0${s}`;
+    }else if(m>= 10 && s<10){
+        return `${m}:0${s}`
+    }else if(m>= 10 && s>=10){
+        return `${m}:${s}`;        
+    }else {
+        return `0${m}:${s}`;
+    }
+}
 
