@@ -11,3 +11,8 @@ html, body {
     height  : 100%;
     touch-action: none;
 }
+.button{
+    position: absolute; 
+    right: 10px; 
+    top: 100px;
+}

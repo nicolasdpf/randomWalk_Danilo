@@ -3,25 +3,26 @@ class Scene {
         this.scene = scene;
         this.canvas = canvas;
         this.engine = engine;
+        this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-100, 200, 0), scene);
+        //this.events = this.events();
+        //this.ground = this.createGround();
     }
 
     createScene() {
         var gravityVector = new BABYLON.Vector3(0, -9.81, 0);
         var physicsPlugin = new BABYLON.CannonJSPlugin();
-        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-100, 200, 0), scene);
+        //camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-100, 200, 0), scene);
 
 
         // This targets the camera to scene origin
-        camera.setTarget(BABYLON.Vector3.Zero());
-
+        this.camera.setTarget(BABYLON.Vector3.Zero());
         // This attaches the camera to the canvas
-        camera.attachControl(canvas, true);
+        this.camera.attachControl(canvas, true);
 
         scene.enablePhysics(gravityVector, physicsPlugin);
 
         return scene;
     }
-
     createLights() {
         var light = new BABYLON.DirectionalLight("dir01", new BABYLON.Vector3(-1, -2, -1), scene);
         light.position = new BABYLON.Vector3(20, 40, 20);
@@ -49,13 +50,12 @@ class Scene {
         ground.position.x = length / 2;
         ground.position.z = width / 2;
 
-        showNormals(ground, 0.25, new BABYLON.Color3(1, 0, 0))
+        showNormals(ground, 0.25, new BABYLON.Color3(1, 0, 0));
+        this.castRay(ground);
         return ground;
     }
-    createTiledGround(name) {
-        // Tiled Ground Tutorial
-
-        // Parameters
+    
+    createTiledGround() {
         var xmin = -1;
         var zmin = -1;
         var xmax = 101;
@@ -65,39 +65,21 @@ class Scene {
             "h": 1
         };
         var subdivisions = {
-            'h': 100,
-            'w': 100
+            'h': 20,
+            'w': 20
         };
-        // Create the Tiled Ground
-        var tiledGround = new BABYLON.Mesh.CreateTiledGround(name, xmin, zmin, xmax, zmax, subdivisions, precision, scene);
-        tiledGround.position.y = -1;
-        showNormals(tiledGround, 0.1, new BABYLON.Color3(1, 0, 0))
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        function showNormals(mesh, size, color, sc) {
-            var normals = mesh.getVerticesData(BABYLON.VertexBuffer.NormalKind);
-            var positions = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-            color = color || BABYLON.Color3.White();
-            sc = sc || scene;
-            size = size || 1;
 
-            var lines = [];
-            for (var i = 0; i < normals.length; i += 3) {
-                var v1 = BABYLON.Vector3.FromArray(positions, i);
-                var v2 = v1.add(BABYLON.Vector3.FromArray(normals, i).scaleInPlace(size));
-                lines.push([v1.add(mesh.position), v2.add(mesh.position)]);
-            }
-            var normalLines = BABYLON.MeshBuilder.CreateLineSystem("normalLines", {
-                lines: lines
-            }, sc);
-            normalLines.color = color;
-            return normalLines;
-        }
+        var tiledGround = new BABYLON.Mesh.CreateTiledGround("name", xmin, zmin, xmax, zmax, subdivisions, precision, scene);
+        tiledGround.showBoundingBox = true;
+        tiledGround.position.y = -1;
+        showNormals(tiledGround, 0.3, new BABYLON.Color3(1, 0, 0))
+
         tiledGround.physicsImpostor = new BABYLON.PhysicsImpostor(tiledGround, BABYLON.PhysicsImpostor.BoxImpostor, {
             mass: 0,
             restitution: 0.9
         }, scene);
         tiledGround.receiveShadows = true;
-        /*
+        
         tiledGround.updateFacetData();
         var positions = tiledGround.getFacetLocalPositions();
         var normals = tiledGround.getFacetLocalNormals();
@@ -106,10 +88,127 @@ class Scene {
             var line = [ positions[i], positions[i].add(normals[i]) ];
             lines.push(line);
         }
+        //this.castRay(tiledGround);
         var lineSystem = BABYLON.MeshBuilder.CreateLineSystem("ls", {lines: lines}, scene);
         lineSystem.color = BABYLON.Color3.Green();
-        */
+        console.log(`normales: ${normals.length}`);
+
+        var ray = new BABYLON.Ray();
+        var rayHelper = new BABYLON.RayHelper(ray);
         return tiledGround;
+    }
+
+
+
+    events( ){
+        var obswire = new BABYLON.StandardMaterial("matBB", scene);
+        obswire.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        obswire.specularColor = new BABYLON.Color3(0, 0, 0);
+        obswire.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        obswire.wireframe = true;
+        $('#button').remove();
+        // add the button to the playground document
+        // this is not needed if the button has already been added in the html
+        $('body').append('<button id="button" style="position: absolute; right: 10px; top: 100px;">Nuevo Obst.</button>');
+        var canvas = engine.getRenderingCanvas();
+        var startingPoint;
+        var currentMesh;
+    
+        var getGroundPosition = function () {
+            // Use a predicate to get position on the ground
+            var pickinfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh == ground; });
+            if (pickinfo.hit) {
+                return pickinfo.pickedPoint;
+            }
+    
+            return null;
+        }
+    
+        var onPointerDown = function (evt) {
+            if (evt.button !== 0) {
+                return;
+            }
+    
+            // check if we are under a mesh
+            var pickInfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh !== this.ground; });
+            if (pickInfo.hit) {
+                currentMesh = pickInfo.pickedMesh;
+                startingPoint = getGroundPosition(evt);
+    
+                if (startingPoint) { // we need to disconnect camera from canvas
+                    setTimeout(function () {
+                        camera.detachControl(canvas);
+                    }, 0);
+                }
+            }
+        }
+    
+        var onPointerUp = function () {
+            if (startingPoint) {
+                camera.attachControl(canvas, true);
+                startingPoint = null;
+                return;
+            }
+        };
+    
+        var onPointerMove = function (evt) {
+            if (!startingPoint) {
+                return;
+            }
+    
+            var current = getGroundPosition(evt);
+    
+            if (!current) {
+                return;
+            }
+    
+            var diff = current.subtract(startingPoint);
+            currentMesh.position.addInPlace(diff);
+    
+            startingPoint = current;
+    
+        };
+    
+        canvas.addEventListener("pointerdown", onPointerDown, false);
+        canvas.addEventListener("pointerup", onPointerUp, false);
+        canvas.addEventListener("pointermove", onPointerMove, false);
+    
+        scene.onDispose = function () {
+            canvas.removeEventListener("pointerdown", onPointerDown);
+            canvas.removeEventListener("pointerup", onPointerUp);
+            canvas.removeEventListener("pointermove", onPointerMove);
+        };
+    
+        $('#button').click(function () {
+            var ob4 = BABYLON.Mesh.CreateSphere("obstaculo 4", 3, 8);
+            ob4.material= obswire;
+            ob4.position.y = 3;
+            ob4.position.x = Math.floor(Math.random()*(20 - (-10) + 1)) + 1;
+            ob4.position.z = Math.floor(Math.random()*(20 - (-10) + 1)) + 1;
+        });
+    }
+    
+    castRay(mesh){       
+        var origin = mesh.position;
+	
+	    var forward = new BABYLON.Vector3(0,1,0);		
+	    forward = vecToLocal(forward, mesh);
+	
+	    var direction = forward.subtract(origin);
+	    direction = BABYLON.Vector3.Normalize(direction);
+	
+	    var length = 100;
+	
+	    var ray = new BABYLON.Ray(origin, direction, length);
+
+		let rayHelper = new BABYLON.RayHelper(ray);		
+		rayHelper.show(scene);		
+/*
+        var hit = scene.pickWithRay(ray);
+
+        if (hit.pickedMesh){
+		   hit.pickedMesh.scaling.y += 0.01;
+	    }*/
     }
 
     getFacetNormals(titledGround) {
@@ -132,8 +231,10 @@ class Scene {
 
 
 
-
-
+//PARTICULA
+//_______________________________________________________________________________________________________________________________________________
+//_______________________________________________________________________________________________________________________________________________
+//_______________________________________________________________________________________________________________________________________________
 class Particula extends Scene {
 
     constructor(scene, name, subdivs, size) {
@@ -219,9 +320,7 @@ class Particula extends Scene {
         var pX = this.mesh.position.x;
         var pY = this.mesh.position.y;
         var pZ = this.mesh.position.z;
-        console.log(`${pX}, ${pY}, ${pZ}`)
         return new BABYLON.Vector3(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z);
-
     }
 
     transformPerQuat(vec) {
@@ -240,9 +339,9 @@ class Particula extends Scene {
 
     setParticleLimits(groundWidth, groundHeight) {
         if (this.mesh.position.z >= groundHeight || this.mesh.position.z < 0) {
-            this.rotateParticle(180);
+            this.rotateParticle(10);
         } else if (this.mesh.position.x >= groundWidth || this.mesh.position.x < 0) {
-            this.rotateParticle(180);
+            this.rotateParticle(10);
         }
     }
 
@@ -294,6 +393,14 @@ class Particula extends Scene {
 
 }
 
+
+
+//_______________________________________________________________________________________________________________________________________________
+//_______________________________________________________________________________________________________________________________________________
+//_______________________________________________________________________________________________________________________________________________
+/**
+ * Functiones generales 
+ */
 function localAxes(size) {
     var pilot_local_axisX = BABYLON.Mesh.CreateLines("pilot_local_axisX", [
         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
@@ -348,4 +455,10 @@ function showNormals(mesh, size, color, sc) {
     }, sc);
     normalLines.color = color;
     return normalLines;
+}
+
+function vecToLocal(vector, mymesh){
+    var m = mymesh.getWorldMatrix();
+    var v = BABYLON.Vector3.TransformCoordinates(vector, m);
+    return v;		 
 }

@@ -5,7 +5,7 @@ var scene = new BABYLON.Scene(engine);
 
 
 var groundName = 'ground1';
-var groundWidth = 100, groundHeight = 100, divs = 1;
+var groundWidth = 100, groundHeight = 100, divs = 2;
 
 var sistParticulas = new Array();
 var tiempo = 0;
@@ -13,28 +13,6 @@ var iParticles = 0;
 //Variables para calcular el tiempo general de la simulación
 var s=0;
 var m=0;
-/*
-function generadorDeParticulas(escena){
-    if(tiempo % 60 == 0){
-        var nombre = String("p " + iParticles);
-            sistParticulas.push(new Particula(escena.scene, nombre, 16, 2));
-            sistParticulas[iParticles].setCoordinates(tiempo);
-            let index;
-            for (index = 0; index < sistParticulas.length; index++) {
-                if(tiempo % 90 === 0 && index % 2 === 0){
-                    sistParticulas[index].setCoordinates(tiempo);
-                }
-                if(tiempo % 30 === 0 && index % 3 === 0){
-                    sistParticulas[index].setCoordinates(tiempo);
-                }
-                if(tiempo % 70 === 0 && index % 4 === 0){
-                    sistParticulas[index].setCoordinates(tiempo);
-                }
-        }
-        iParticles++;
-    }
-}
-*/
 
 //Variable que hará un conteo general de los espacios creados
 var iGrounds;
@@ -43,27 +21,22 @@ window.addEventListener('DOMContentLoaded', function(){
     var escena = new Scene(scene, canvas, engine);
     escena.createScene();
     escena.createLights();
-    escena.generateShadows();
+    //escena.generateShadows();
     //escena.createGround(groundName, groundWidth, groundHeight, divs);
     var tiledGround = escena.createTiledGround("tiledGround");
 
     var particula = new Particula(escape.scene, 'PPP', 16, 2);
     particula.getPosition();
 
-
-    //var theta = 2 * Math.PI * Math.random();
-    //var phi = Math.PI - 2 * Math.PI * Math.random();
-    //var xi = Math.sin(phi) * Math.cos(theta);
     var i=0;
     
     escena.scene.registerBeforeRender(function(){
         var moveDelta = new BABYLON.Vector3(0, 0, i);
-        i = 0.511;
+        i = 0.3;
         particula.avanzar(moveDelta);
         particula.setParticleLimits(groundWidth, groundHeight);
         text1.text =stopwatch(tiempo);
         tiempo ++;
-        console.log(m);
     });
       
     var text1 = new BABYLON.GUI.TextBlock();
@@ -77,15 +50,104 @@ window.addEventListener('DOMContentLoaded', function(){
     
     // GUI
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-    text1.textHorizontalAlignment = 50;
-    text1.textVerticalAlignment =0;
-
+    text1.textHorizontalAlignment = 2;
+    text1.textVerticalAlignment = 1;
     advancedTexture.addControl(text1);   
 
     showAxis(10);
+    //events(escena.scene, tiledGround);
 });
 
+/*
 
+function events(scene, ground, camera){
+    var obswire = new BABYLON.StandardMaterial("matBB", scene);
+    obswire.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    obswire.specularColor = new BABYLON.Color3(0, 0, 0);
+    obswire.emissiveColor = new BABYLON.Color3(0, 0, 0);
+    obswire.wireframe = true;
+    $('#button').remove();
+    // add the button to the playground document
+    // this is not needed if the button has already been added in the html
+    $('body').append('<button id="button" style="position: absolute; right: 10px; top: 100px;">Nuevo Obst.</button>');
+    var canvas = engine.getRenderingCanvas();
+    var startingPoint;
+    var currentMesh;
+
+    var getGroundPosition = function () {
+        // Use a predicate to get position on the ground
+        var pickinfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh == ground; });
+        if (pickinfo.hit) {
+            return pickinfo.pickedPoint;
+        }
+
+        return null;
+    }
+
+    var onPointerDown = function (evt) {
+        if (evt.button !== 0) {
+            return;
+        }
+
+        // check if we are under a mesh
+        var pickInfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh !== ground; });
+        if (pickInfo.hit) {
+            currentMesh = pickInfo.pickedMesh;
+            startingPoint = getGroundPosition(evt);
+
+            if (startingPoint) { // we need to disconnect camera from canvas
+                setTimeout(function () {
+                    camera.detachControl(canvas);
+                }, 0);
+            }
+        }
+    }
+
+    var onPointerUp = function () {
+        if (startingPoint) {
+            camera.attachControl(canvas, true);
+            startingPoint = null;
+            return;
+        }
+    }
+
+    var onPointerMove = function (evt) {
+        if (!startingPoint) {
+            return;
+        }
+
+        var current = getGroundPosition(evt);
+
+        if (!current) {
+            return;
+        }
+
+        var diff = current.subtract(startingPoint);
+        currentMesh.position.addInPlace(diff);
+
+        startingPoint = current;
+
+    }
+
+    canvas.addEventListener("pointerdown", onPointerDown, false);
+    canvas.addEventListener("pointerup", onPointerUp, false);
+    canvas.addEventListener("pointermove", onPointerMove, false);
+
+    scene.onDispose = function () {
+        canvas.removeEventListener("pointerdown", onPointerDown);
+        canvas.removeEventListener("pointerup", onPointerUp);
+        canvas.removeEventListener("pointermove", onPointerMove);
+    }
+
+    $('#button').click(function () {
+        var ob4 = BABYLON.Mesh.CreateSphere("obstaculo 4", 3, 8);
+        ob4.material= obswire;
+        ob4.position.y = 3;
+        ob4.position.x = Math.floor(Math.random()*(20 - (-10) + 1)) + 1;;
+        ob4.position.z = Math.floor(Math.random()*(20 - (-10) + 1)) + 1;;
+    });
+}
+*/
 var showAxis = function(size) {
     var makeTextPlane = function(text, color, size) {
     var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
