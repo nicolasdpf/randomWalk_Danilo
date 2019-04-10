@@ -21,16 +21,16 @@ window.addEventListener('DOMContentLoaded', function(){
     var escena = new Scene(scene, canvas, engine);
     escena.createScene();
     escena.createLights();
-    //escena.generateShadows();
-    //escena.createGround(groundName, groundWidth, groundHeight, divs);
-    var tiledGround = escena.createTiledGround("tiledGround");
+    var tiledGround = new Ground(scene, "Ground1");
 
     var particula = new Particula(escape.scene, 'PPP', 16, 2);
     particula.getPosition();
 
     var i=0;
     
-    escena.scene.registerBeforeRender(function(){
+    escena.scene.registerAfterRender(function(){
+        
+        particula.memoriaRecorrido();
         var moveDelta = new BABYLON.Vector3(0, 0, i);
         i = 0.3;
         particula.avanzar(moveDelta);
@@ -54,100 +54,10 @@ window.addEventListener('DOMContentLoaded', function(){
     text1.textVerticalAlignment = 1;
     advancedTexture.addControl(text1);   
 
-    showAxis(10);
+    showAxis(100);
     //events(escena.scene, tiledGround);
 });
 
-/*
-
-function events(scene, ground, camera){
-    var obswire = new BABYLON.StandardMaterial("matBB", scene);
-    obswire.diffuseColor = new BABYLON.Color3(0, 0, 0);
-    obswire.specularColor = new BABYLON.Color3(0, 0, 0);
-    obswire.emissiveColor = new BABYLON.Color3(0, 0, 0);
-    obswire.wireframe = true;
-    $('#button').remove();
-    // add the button to the playground document
-    // this is not needed if the button has already been added in the html
-    $('body').append('<button id="button" style="position: absolute; right: 10px; top: 100px;">Nuevo Obst.</button>');
-    var canvas = engine.getRenderingCanvas();
-    var startingPoint;
-    var currentMesh;
-
-    var getGroundPosition = function () {
-        // Use a predicate to get position on the ground
-        var pickinfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh == ground; });
-        if (pickinfo.hit) {
-            return pickinfo.pickedPoint;
-        }
-
-        return null;
-    }
-
-    var onPointerDown = function (evt) {
-        if (evt.button !== 0) {
-            return;
-        }
-
-        // check if we are under a mesh
-        var pickInfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh !== ground; });
-        if (pickInfo.hit) {
-            currentMesh = pickInfo.pickedMesh;
-            startingPoint = getGroundPosition(evt);
-
-            if (startingPoint) { // we need to disconnect camera from canvas
-                setTimeout(function () {
-                    camera.detachControl(canvas);
-                }, 0);
-            }
-        }
-    }
-
-    var onPointerUp = function () {
-        if (startingPoint) {
-            camera.attachControl(canvas, true);
-            startingPoint = null;
-            return;
-        }
-    }
-
-    var onPointerMove = function (evt) {
-        if (!startingPoint) {
-            return;
-        }
-
-        var current = getGroundPosition(evt);
-
-        if (!current) {
-            return;
-        }
-
-        var diff = current.subtract(startingPoint);
-        currentMesh.position.addInPlace(diff);
-
-        startingPoint = current;
-
-    }
-
-    canvas.addEventListener("pointerdown", onPointerDown, false);
-    canvas.addEventListener("pointerup", onPointerUp, false);
-    canvas.addEventListener("pointermove", onPointerMove, false);
-
-    scene.onDispose = function () {
-        canvas.removeEventListener("pointerdown", onPointerDown);
-        canvas.removeEventListener("pointerup", onPointerUp);
-        canvas.removeEventListener("pointermove", onPointerMove);
-    }
-
-    $('#button').click(function () {
-        var ob4 = BABYLON.Mesh.CreateSphere("obstaculo 4", 3, 8);
-        ob4.material= obswire;
-        ob4.position.y = 3;
-        ob4.position.x = Math.floor(Math.random()*(20 - (-10) + 1)) + 1;;
-        ob4.position.z = Math.floor(Math.random()*(20 - (-10) + 1)) + 1;;
-    });
-}
-*/
 var showAxis = function(size) {
     var makeTextPlane = function(text, color, size) {
     var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
