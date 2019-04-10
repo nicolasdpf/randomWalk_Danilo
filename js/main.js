@@ -14,33 +14,40 @@ var iParticles = 0;
 var s=0;
 var m=0;
 
+
+
 //Variable que hará un conteo general de los espacios creados
 var iGrounds;
+var theta = 2 * Math.PI * Math.random();
+var phi = Math.PI - 2 * Math.PI * Math.random();
 
 window.addEventListener('DOMContentLoaded', function(){
     var escena = new Scene(scene, canvas, engine);
     escena.createScene();
     escena.createLights();
     var tiledGround = new Ground(scene, "Ground1");
-
     var particula = new Particula(escape.scene, 'PPP', 16, 2);
-    particula.getPosition();
-
+    
     var i=0;
     
+
     escena.scene.registerAfterRender(function(){
-        
-        particula.memoriaRecorrido();
-        var moveDelta = new BABYLON.Vector3(0, 0, i);
+
         i = 0.3;
+        var posXY = agregarRecorridoParticulaLS(particula);
+        var moveDelta = new BABYLON.Vector3(0, 0, i);
         particula.avanzar(moveDelta);
+        getRotateStep(particula);
         particula.setParticleLimits(groundWidth, groundHeight);
-        text1.text =stopwatch(tiempo);
+        text1.text = stopwatch(tiempo);
+        text2.text = `${posXY}`;
+
         tiempo ++;
     });
       
     var text1 = new BABYLON.GUI.TextBlock();
     var text2 = new BABYLON.GUI.TextBlock();
+    text2.color = "red";
     text1.color = "white";
     text1.fontSize = 24;
     
@@ -55,8 +62,32 @@ window.addEventListener('DOMContentLoaded', function(){
     advancedTexture.addControl(text1);   
 
     showAxis(100);
-    //events(escena.scene, tiledGround);
 });
+
+function getRotateStep(particula){
+    var rotateStp = getRndInteger(-0.5, 0.5);
+    if( s % 5 === 0){
+        rotateStp = 0.02;
+        particula.rotateParticle(rotateStp);
+    }
+    if(s % 7 === 0){
+        rotateStp = 0.03;
+        particula.rotateParticle(rotateStp);
+    }
+}
+
+function agregarRecorridoParticulaLS(particula){
+    var posParticula = particula.getPosition();
+    if (s % 5 === 0){
+        var posXY = [];
+        localStorage.setItem(`X  ${m} m con ${s} segundo(s)`, round(posParticula.x));
+        posXY.push(posParticula.x);
+        localStorage.setItem(`Z  ${m} m con ${s} segundo(s)`, round(posParticula.z));
+        posXY.push(posParticula.y);
+        return posXY[0];
+    }
+}
+
 
 var showAxis = function(size) {
     var makeTextPlane = function(text, color, size) {

@@ -263,6 +263,7 @@ class Particula extends Scene {
         var pX = this.mesh.position.x;
         var pY = this.mesh.position.y;
         var pZ = this.mesh.position.z;
+        //console.log(`${this.mesh.position.x}, ${this.mesh.position.y}, ${this.mesh.position.z}`)
         return new BABYLON.Vector3(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z);
     }
 
@@ -288,13 +289,24 @@ class Particula extends Scene {
         }
     }
     memoriaRecorrido(){
-        console.log("RUNING!");
         var position = this.getPosition();
-        console.log(`${position.pX}, ${position.pY}, ${position.pZ}`);
+        console.log(`${round(position.x, 3)}, ${round(position.y, 3)}, ${round(position.z, 3)}`);
 
     }
 }
 
+function round(num, decimales = 2) {
+    var signo = (num >= 0 ? 1 : -1);
+    num = num * signo;
+    if (decimales === 0) //con 0 decimales
+        return signo * Math.round(num);
+    // round(x * 10 ^ decimales)
+    num = num.toString().split('e');
+    num = Math.round(+(num[0] + 'e' + (num[1] ? (+num[1] + decimales) : decimales)));
+    // x * 10 ^ (-decimales)
+    num = num.toString().split('e');
+    return signo * (num[0] + 'e' + (num[1] ? (+num[1] - decimales) : -decimales));
+}
 
 
 //_______________________________________________________________________________________________________________________________________________
