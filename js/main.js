@@ -1,3 +1,5 @@
+/*jshint esversion: 6*/
+//import * as BABYLON from 'babylonjs';
 
 var canvas = document.getElementById('renderCanvas');
 var engine = new BABYLON.Engine(canvas, true);
@@ -22,14 +24,6 @@ var theta = 2 * Math.PI * Math.random();
 var phi = Math.PI - 2 * Math.PI * Math.random();
 
 
-function generadorDeParticulas(escena){
-    if(s % 5 == 0){
-        var nombre = String("p " + iParticles);
-            sistParticulas.push(new Particula(escena.scene, nombre, 16, 10));
-            //sistParticulas[iParticles].setCoordinates(tiempo);
-        iParticles++;
-    }
-}
 
 window.addEventListener('DOMContentLoaded', function(){
     var escena = new Scene(scene, canvas, engine);
@@ -74,9 +68,13 @@ window.addEventListener('DOMContentLoaded', function(){
     showAxis(100);
 });
 
-
-function orientationSystem(){
-
+function sphereAction(mesh, scene){
+    var escene = scene.getScene();
+    mesh.actionManager = new BABYLON.ActionManager(scene);
+    /*
+    mesh.actionManager.registerAction( new BABYLON.SetValueAction(
+        {trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: },
+    ));*/
 }
 
 function getRotateStep(particula){
