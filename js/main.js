@@ -21,6 +21,16 @@ var iGrounds;
 var theta = 2 * Math.PI * Math.random();
 var phi = Math.PI - 2 * Math.PI * Math.random();
 
+
+function generadorDeParticulas(escena){
+    if(s % 5 == 0){
+        var nombre = String("p " + iParticles);
+            sistParticulas.push(new Particula(escena.scene, nombre, 16, 10));
+            //sistParticulas[iParticles].setCoordinates(tiempo);
+        iParticles++;
+    }
+}
+
 window.addEventListener('DOMContentLoaded', function(){
     var escena = new Scene(scene, canvas, engine);
     escena.createScene();
@@ -64,6 +74,11 @@ window.addEventListener('DOMContentLoaded', function(){
     showAxis(100);
 });
 
+
+function orientationSystem(){
+
+}
+
 function getRotateStep(particula){
     var rotateStp = getRndInteger(-0.5, 0.5);
     if( s % 5 === 0){
@@ -74,11 +89,32 @@ function getRotateStep(particula){
         rotateStp = 0.03;
         particula.rotateParticle(rotateStp);
     }
+    if(s % 2 === 0){
+        var choose = getRndInteger(0, 1);
+        if(choose === 1 ){
+            rotateStp = -0.02;
+            particula.rotateParticle(rotateStp);
+        }else if( choose === 0){
+            rotateStp = 0.02;
+            particula.rotateParticle(rotateStp);
+        }
+    }
+    if(s %  0.26 === 0){
+        rotateStp = -0.02;
+        particula.rotateParticle(rotateStp);
+    }
+    
 }
+
+
+/**
+ * Function para agregar el recorrido de cada partícula en el LOCAL STORAGE
+ * @param {*} particula 
+ */
 
 function agregarRecorridoParticulaLS(particula){
     var posParticula = particula.getPosition();
-    if (s % 5 === 0){
+    if (s % 2 === 0){
         var posXY = [];
         localStorage.setItem(`X  ${m} m con ${s} segundo(s)`, round(posParticula.x));
         posXY.push(posParticula.x);

@@ -139,8 +139,8 @@ class Ground extends Scene {
         var xmax = 101;
         var zmax = 101;
         var precision = {
-            "w": 1,
-            "h": 1
+            "w": 0,
+            "h": 0
         };
         var subdivisions = {
             'h': 20,
@@ -156,14 +156,18 @@ class Ground extends Scene {
         }, scene);
         tiledGround.receiveShadows = true;
         showNormals(tiledGround, 0.3, new BABYLON.Color3(1, 0, 0))
-        
+     
         tiledGround.updateFacetData();
         var positions = tiledGround.getFacetLocalPositions();
         var normals = tiledGround.getFacetLocalNormals();
         var lines = [];
+
+        var datas = [];
         for (var i = 0; i < positions.length; i++) {
             var line = [ positions[i], positions[i].add(normals[i]) ];
             lines.push(line);
+
+            datas.push(new BABYLON.Mesh.CreateBox("Data "+ i, 0.5))
         }
         var lineSystem = BABYLON.MeshBuilder.CreateLineSystem("ls", {lines: lines}, scene);
         lineSystem.color = BABYLON.Color3.Green();
@@ -172,6 +176,8 @@ class Ground extends Scene {
         return tiledGround;
     }
 
+    getFacetNormals(){
+    }
 }
 
 //PARTICULA
@@ -180,7 +186,7 @@ class Ground extends Scene {
 //_______________________________________________________________________________________________________________________________________________
 class Particula extends Scene {
 
-    constructor(scene, name, subdivs, size) {
+    constructor(scene, name, subdivs, size, viva) {
         super(scene);
         this.name = name;
         this.subdivs = subdivs;
@@ -188,11 +194,12 @@ class Particula extends Scene {
         this.mesh = this.crearParticula();
         this.meshLabel = this.meshLabelName();
         this.torus = this.crearToro();
+        this.viva = viva;
     }
 
 
     crearParticula() {
-
+        this.viva = true;
         var sphereMat = new BABYLON.StandardMaterial("ground", scene);
 
         // Material y Color
@@ -216,6 +223,26 @@ class Particula extends Scene {
         mesh.receiveShadows = true;
 
         return mesh;
+    }
+
+    starTime(i){
+        if(this.viva = true){
+            var fps = i;
+            var s, m;
+            var totalSeconds;
+            if(fps % 60 === 0){
+                s += 1;
+                totalSeconds += 1;
+            } else if(s >= 60){
+                m += 1;
+                s = 0;
+            }
+        }
+        return totalSeconds;
+    }
+    getTiempoDeVida(i){
+        var tiempodeVida = this.starTime(i);
+        console.log(`${tiempodeVida}`)
     }
 
     crearToro() {
@@ -293,6 +320,7 @@ class Particula extends Scene {
         console.log(`${round(position.x, 3)}, ${round(position.y, 3)}, ${round(position.z, 3)}`);
 
     }
+
 }
 
 function round(num, decimales = 2) {
