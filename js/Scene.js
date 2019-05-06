@@ -11,7 +11,6 @@ class Scene {
         var physicsPlugin = new BABYLON.CannonJSPlugin();
         //camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-100, 200, 0), scene);
 
-
         // This targets the camera to scene origin
         this.camera.setTarget(BABYLON.Vector3.Zero());
         // This attaches the camera to the canvas
@@ -150,9 +149,10 @@ class Ground extends Scene {
         var tiledGround = new BABYLON.Mesh.CreateTiledGround("name", xmin, zmin, xmax, zmax, subdivisions, precision, scene);
         tiledGround.showBoundingBox = true;
         tiledGround.position.y = -1;
+        
         tiledGround.physicsImpostor = new BABYLON.PhysicsImpostor(tiledGround, BABYLON.PhysicsImpostor.BoxImpostor, {
             mass: 0,
-            restitution: 0.9
+            restitution: 0
         }, scene);
         tiledGround.receiveShadows = true;
         //showNormals(tiledGround, 0.3, new BABYLON.Color3(1, 0, 0))
@@ -188,15 +188,15 @@ class Ground extends Scene {
 //_______________________________________________________________________________________________________________________________________________
 class Particula extends Scene {
 
-    constructor(scene, name, subdivs, size, viva) {
+    constructor(scene, name, subdivs, size) {
         super(scene);
         this.name = name;
         this.subdivs = subdivs;
         this.size = size;
         this.mesh = this.crearParticula();
         this.meshLabel = this.meshLabelName();
-        this.torus = this.crearToro();
-        this.viva = viva;
+        this.recorrido = 0;
+        this.velocidad = 0.3;
     }
 
 
@@ -210,11 +210,14 @@ class Particula extends Scene {
         sphereMat.emissiveColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 
         var mesh = new BABYLON.Mesh.CreateSphere(name, this.subdivs, this.size, scene);
+        
+        
         mesh.physicsImpostor = new BABYLON.PhysicsImpostor(mesh, BABYLON.PhysicsImpostor.SphereImpostor, {
-            mass: Math.random(),
+            mass: 1000,
             restitution: 0
         }, scene);
-        mesh.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
+        
+
         mesh.material = sphereMat;
         // mesh.position.y =-10;
         mesh.position = new BABYLON.Vector3(getRndInteger(-1, 10), 1, getRndInteger(-10, 10));
@@ -226,42 +229,6 @@ class Particula extends Scene {
 
         return mesh;
     }
-
-    starTime(i){
-        if(this.viva = true){
-            var fps = i;
-            var s, m;
-            var totalSeconds;
-            if(fps % 60 === 0){
-                s += 1;
-                totalSeconds += 1;
-            } else if(s >= 60){
-                m += 1;
-                s = 0;
-            }
-        }
-        return totalSeconds;
-    }
-    getTiempoDeVida(i){
-        var tiempodeVida = this.starTime(i);
-        console.log(`${tiempodeVida}`)
-    }
-
-    crearToro() {
-        var torusMat = new BABYLON.StandardMaterial("texture1", scene);
-
-        var torus = new BABYLON.Mesh.CreateTorus(this.name, 7, 0.2, 32, scene, false);
-
-        // Material y Color
-        torusMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
-        torusMat.specularColor = new BABYLON.Color3(0, 1, 0);
-        torusMat.emissiveColor = new BABYLON.Color3(0, 1, 0);
-        torus.material = torusMat;
-        torus.parent = this.mesh;
-
-        return torus;
-    }
-
     meshLabelName() {
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         advancedTexture.layer.layerMask = 2;
@@ -308,6 +275,8 @@ class Particula extends Scene {
 
     avanzar(moveVector) {
         this.mesh.moveWithCollisions(this.transformPerQuat(moveVector));
+        this.recorrido += 1;
+        //console.log(this.recorrido);
     }
 
     setParticleLimits(groundWidth, groundHeight) {
@@ -401,12 +370,7 @@ function showNormals(mesh, size, color, sc) {
     return normalLines;
 }
 
-function getNormalPositions(mesh){
-    var normals = mesh.getVerticesData(BABYLON.VertexBuffer.NormalKind);
-    var positions = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-    console.log(positions);
-    return positions;
-}
+
 
 function vecToLocal(vector, mymesh){
     var m = mymesh.getWorldMatrix();

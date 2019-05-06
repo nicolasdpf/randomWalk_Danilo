@@ -26,6 +26,7 @@ var phi = Math.PI - 2 * Math.PI * Math.random();
 
 
 window.addEventListener('DOMContentLoaded', function(){
+    
     var escena = new Scene(scene, canvas, engine);
     escena.createScene();
     escena.createLights();
@@ -35,30 +36,37 @@ window.addEventListener('DOMContentLoaded', function(){
     var i=0;
     
 
-    escena.scene.registerAfterRender(function(){
-
-        i = 0.3;
-        var posXY = agregarRecorridoParticulaLS(particula);
-        var moveDelta = new BABYLON.Vector3(0, 0, i);
-        particula.avanzar(moveDelta);
-        getRotateStep(particula);
-        particula.setParticleLimits(groundWidth, groundHeight);
-        text1.text = stopwatch(tiempo);
-        text2.text = `${posXY}`;
-
-        tiempo ++;
-    });
-      
+    
     var text1 = new BABYLON.GUI.TextBlock();
     var text2 = new BABYLON.GUI.TextBlock();
     text2.color = "red";
     text1.color = "white";
     text1.fontSize = 24;
     
+    
+    escena.scene.registerAfterRender(function(){
+        
+        //particula.velocidad = 0.3;
+        var posXY = agregarRecorridoParticulaLS(particula);
+
+        var moveDelta = new BABYLON.Vector3(0, 0, particula.velocidad);
+        particula.avanzar(moveDelta);
+        getRotateStep(particula);
+        particula.setParticleLimits(groundWidth, groundHeight);
+
+        text1.text = stopwatch(tiempo);
+        text2.text = `${posXY}`;
+
+        tiempo ++;
+    });
+      
+
+    
     escena.engine.runRenderLoop(function(){
         escena.scene.render();
     });
-    
+    escena.scene.debugLayer.show();
+
     // GUI
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
     text1.textHorizontalAlignment = 2;
@@ -68,15 +76,33 @@ window.addEventListener('DOMContentLoaded', function(){
     showAxis(100);
 });
 
-function sphereAction(mesh, scene){
-    var escene = scene.getScene();
-    mesh.actionManager = new BABYLON.ActionManager(scene);
-    /*
-    mesh.actionManager.registerAction( new BABYLON.SetValueAction(
-        {trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: },
-    ));*/
+function stopwatch(i){
+    var fps = i;
+    var h;
+
+
+    if(fps % 60 === 0){
+        s += 1;
+    } else if(s >= 60){
+        m += 1;
+        s = 0;
+    }
+    if(m < 10 && s < 10){
+        return `0${m}:0${s}`;
+    }else if( m >= 10 && s < 10){
+        return `${m}:0${s}`
+    }else if(m >= 10 && s >= 10){
+        return `${m}:${s}`;        
+    }else {
+        return `0${m}:${s}`;
+    }
 }
 
+/**
+ * OBTENER paso de rotación
+ * 
+ * @param {*} particula 
+ */
 function getRotateStep(particula){
     var rotateStp = getRndInteger(-0.5, 0.5);
     if( s % 5 === 0){
@@ -159,26 +185,4 @@ var showAxis = function(size) {
     zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
 };
 
-
-function stopwatch(i){
-    var fps = i;
-    var h;
-
-
-    if(fps % 60 === 0){
-        s += 1;
-    } else if(s >= 60){
-        m += 1;
-        s = 0;
-    }
-    if(m<10 && s < 10){
-        return `0${m}:0${s}`;
-    }else if(m>= 10 && s<10){
-        return `${m}:0${s}`
-    }else if(m>= 10 && s>=10){
-        return `${m}:${s}`;        
-    }else {
-        return `0${m}:${s}`;
-    }
-}
 
