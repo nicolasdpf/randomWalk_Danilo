@@ -1,27 +1,6 @@
 /*jshint esversion: 6*/
 //import * as BABYLON from 'babylonjs';
 
-var canvas = document.getElementById('renderCanvas');
-var engine = new BABYLON.Engine(canvas, true);
-var scene = new BABYLON.Scene(engine);
-
-
-var groundName = 'ground1';
-var groundWidth = 100, groundHeight = 100, divs = 2;
-
-var sistParticulas = new Array();
-var tiempo = 0;
-var iParticles = 0;
-//Variables para calcular el tiempo general de la simulación
-var s=0;
-var m=0;
-
-
-
-//Variable que hará un conteo general de los espacios creados
-var iGrounds;
-var theta = 2 * Math.PI * Math.random();
-var phi = Math.PI - 2 * Math.PI * Math.random();
 
 
 
@@ -31,12 +10,12 @@ window.addEventListener('DOMContentLoaded', function(){
     escena.createScene();
     escena.createLights();
     var tiledGround = new Ground(scene, "Ground1");
-    var particula = new Particula(escape.scene, 'PPP', 16, 2);
     
+
     var i=0;
     
 
-    
+
     var text1 = new BABYLON.GUI.TextBlock();
     var text2 = new BABYLON.GUI.TextBlock();
     text2.color = "red";
@@ -45,19 +24,13 @@ window.addEventListener('DOMContentLoaded', function(){
     
     
     escena.scene.registerAfterRender(function(){
+        escena.inicializarSistema(tiempo);
+        crearParticula(escena); 
+        //crearParticula(escena); 
         
-        //particula.velocidad = 0.3;
-        var posXY = agregarRecorridoParticulaLS(particula);
-
-        var moveDelta = new BABYLON.Vector3(0, 0, particula.velocidad);
-        particula.avanzar(moveDelta);
-        getRotateStep(particula);
-        particula.setParticleLimits(groundWidth, groundHeight);
-
         text1.text = stopwatch(tiempo);
-        text2.text = `${posXY}`;
-
         tiempo ++;
+        vidaParticulas();
     });
       
 
@@ -72,9 +45,9 @@ window.addEventListener('DOMContentLoaded', function(){
     text1.textHorizontalAlignment = 2;
     text1.textVerticalAlignment = 1;
     advancedTexture.addControl(text1);   
-
-    showAxis(100);
 });
+
+
 
 function stopwatch(i){
     var fps = i;
