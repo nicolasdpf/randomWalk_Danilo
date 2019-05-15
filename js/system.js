@@ -19,25 +19,30 @@ function crearParticula(escena, bool){
         poblacion += 1;
         particlesPopulation.push(particula);   
     }
+
+    if(inicializacion === true && poblacion < 3){
+        var particula = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
+        console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
+        poblacion += 1;
+        particlesPopulation.push(particula);   
+    }
 }
 
 function vidaParticulas(){
     if(particlesPopulation.length != 0){
         for(var i = 0; i < particlesPopulation.length; i++){
             particlesPopulation[i].inicializarVariables(tiempo);
+            for (let j = 0; j < particlesPopulation.length; j++) {
+                if(i != j){
+                    particlesPopulation[i].detectCollisions(particlesPopulation[j]);
+                    particlesPopulation[j].detectCollisions(particlesPopulation[i]);
+                }
+            }
         }
     }
 }
 
 
-
-function MomentosParticula(particula){
-    if (particula.mesh.position.z >= groundHeight || particula.mesh.position.z < 0) {
-            decisionesParticula(1, tiempo, particula.recorrido);
-    } else if (particula.mesh.position.x >= groundWidth || particula.mesh.position.x < 0) {
-            return 1;
-    }
-}
 
 function limiteDelMapa(){
 

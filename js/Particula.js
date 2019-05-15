@@ -10,11 +10,14 @@ class Particula extends Scene {
         this.meshLabel = this.meshLabelName();
         this.toro = this.crearToro();
         this.velocidad = 0;
+        this.velMax = 0.5;
+        this.velMin = 0.02;
         this.edad = 0;
         this.edadFPS = 0;
         this.recorrido = 0;
         this.segundoDeNacimiento = segundoDeNacimiento;
         this.interacciones = 0;
+        this.boolInteractuando = false;
     }
 
 
@@ -91,8 +94,23 @@ class Particula extends Scene {
                 console.log(this.recorrido);
             }
         }
-        // console.log(distances);
-        // return round(distances);
+    }
+
+    evaluarOrientacion(){
+        var random = getRndInteger(0, 2);
+        switch(random){
+            case 0:
+                //Siga al frente 
+                rotateParticle(0);
+                break;
+            case 1: 
+                //Derecha
+                rotateParticle(getRndInteger(0, 45));
+                break;
+            case 2:
+                //izquierda
+                rotateParticle(getRndInteger(0, -45));
+        }
     }
 
 
@@ -113,17 +131,32 @@ class Particula extends Scene {
             this.setModo(1);
         }
 
+
+        if(this.boolInteractuando){
+            this.setModo(2);
+        }else{
+            this.setModo(0);
+        }
+
+
     }
-    detectCollisions(){}
+    detectCollisions(visitante){
+        if(this.toro.intersectsMesh(visitante.toro, true)){
+            //return true;
+            this.boolInteractuando = true;
+        }else{
+            this.boolInteractuando = false;
+        }
+    }
     
     setModo(modo){
         switch (modo) {
             case 0:
                 //this.disminuirVelocidad(this.velocidad);        
-                if(this.velocidad < 0.5){
+                if(this.velocidad < this.velMax){
                     this.velocidad += 0.01;
                 }else{
-                    this.velocidad = 0.5;
+                    this.velocidad = this.velMax;
                 }
                 var vecAvance = new BABYLON.Vector3(0, 0, this.velocidad);
                 this.avanzar(vecAvance);
@@ -134,7 +167,18 @@ class Particula extends Scene {
                 this.setModo(0);
                 break;
             case 2:
-
+                if(this.edad % 10 === 0){
+                    if(this.edadFPS === 61){
+                        this.interacciones += 1;
+                        this.velMax = 0.001;
+                    }
+                }
+                if(this.velocidad > this.velMin){
+                    this.velocidad -= 0.03;
+                }else{
+                    this.velocidad = this.velMin;
+                }
+                this.setModo(0);     
                 break;
             default:
                 break;
@@ -194,13 +238,12 @@ class Particula extends Scene {
         this.recorrido += 1;
     }
 
-    setParticleLimits(groundWidth, groundHeight) {
-
-    }
     memoriaRecorrido(){
         var position = this.getPosition();
         console.log(`${round(position.x, 3)}, ${round(position.y, 3)}, ${round(position.z, 3)}`);
-
     }
+
+    
+
 }
 
