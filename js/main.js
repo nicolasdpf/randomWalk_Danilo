@@ -12,20 +12,6 @@ window.addEventListener('DOMContentLoaded', function(){
     var tiledGround = new Ground(scene, "Ground1");
     
 
-    var i=0;
-    // var particula1 = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
-    // poblacion += 1;
-    // particlesPopulation.push(particula1);
-    // var particula2 = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
-    // poblacion += 1;
-    // particlesPopulation.push(particula2);
-    // var particula3 = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
-    // poblacion += 1;
-    // particlesPopulation.push(particula3);
-    // var particula4 = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
-    // poblacion += 1;
-    // particlesPopulation.push(particula4);
-
 
     var text1 = new BABYLON.GUI.TextBlock();
     var text2 = new BABYLON.GUI.TextBlock();

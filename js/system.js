@@ -43,8 +43,3 @@ function vidaParticulas(){
 }
 
 
-
-function limiteDelMapa(){
-
-}
-

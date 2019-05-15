@@ -244,6 +244,13 @@ class Particula extends Scene {
     }
 
     
-
+    printInformation(particle){
+        var seccion = document.getElementById("sectInfo");
+        
+        var div = document.createElement("div");
+        div.className = particle.name;
+        seccion.appendChild(div);
+    
+    }
 }
 
