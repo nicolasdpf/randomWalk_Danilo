@@ -31,10 +31,17 @@ window.addEventListener('DOMContentLoaded', function(){
     escena.createScene();
     escena.createLights();
     var tiledGround = new Ground(scene, "Ground1");
-    var particula = new Particula(escape.scene, 'PPP', 16, 2);
+    var particula = new Particula(escape.scene, 'PPP', 4, 2);
+    var particula2 = new Particula(escape.scene, 'PPP', 4, 2);
     
     var i=0;
     
+
+
+
+
+
+
 
     
     var text1 = new BABYLON.GUI.TextBlock();
@@ -53,6 +60,13 @@ window.addEventListener('DOMContentLoaded', function(){
         particula.avanzar(moveDelta);
         getRotateStep(particula);
         particula.setParticleLimits(groundWidth, groundHeight);
+
+        //var posXY2 = agregarRecorridoParticulaLS(particula2);
+
+        var moveDelta = new BABYLON.Vector3(0, 0, particula2.velocidad);
+        particula2.avanzar(moveDelta);
+        getRotateStep(particula2);
+        particula2.setParticleLimits(groundWidth, groundHeight);
 
         text1.text = stopwatch(tiempo);
         text2.text = `${posXY}`;

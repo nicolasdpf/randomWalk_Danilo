@@ -16,7 +16,7 @@ class Scene {
         // This attaches the camera to the canvas
         this.camera.attachControl(canvas, true);
 
-        scene.enablePhysics(gravityVector, physicsPlugin);
+        //scene.enablePhysics(gravityVector, physicsPlugin);
 
         return scene;
     }
@@ -35,93 +35,6 @@ class Scene {
         shadowGenerator.normalBias = 0.01;
 
         return shadowGenerator;
-    }
-    events( ){
-        var obswire = new BABYLON.StandardMaterial("matBB", scene);
-        obswire.diffuseColor = new BABYLON.Color3(0, 0, 0);
-        obswire.specularColor = new BABYLON.Color3(0, 0, 0);
-        obswire.emissiveColor = new BABYLON.Color3(0, 0, 0);
-        obswire.wireframe = true;
-        $('#button').remove();
-        // add the button to the playground document
-        // this is not needed if the button has already been added in the html
-        $('body').append('<button id="button" style="position: absolute; right: 10px; top: 100px;">Nuevo Obst.</button>');
-        var canvas = engine.getRenderingCanvas();
-        var startingPoint;
-        var currentMesh;
-    
-        var getGroundPosition = function () {
-            // Use a predicate to get position on the ground
-            var pickinfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh == ground; });
-            if (pickinfo.hit) {
-                return pickinfo.pickedPoint;
-            }
-    
-            return null;
-        }
-    
-        var onPointerDown = function (evt) {
-            if (evt.button !== 0) {
-                return;
-            }
-    
-            // check if we are under a mesh
-            var pickInfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh !== this.ground; });
-            if (pickInfo.hit) {
-                currentMesh = pickInfo.pickedMesh;
-                startingPoint = getGroundPosition(evt);
-    
-                if (startingPoint) { // we need to disconnect camera from canvas
-                    setTimeout(function () {
-                        camera.detachControl(canvas);
-                    }, 0);
-                }
-            }
-        }
-    
-        var onPointerUp = function () {
-            if (startingPoint) {
-                camera.attachControl(canvas, true);
-                startingPoint = null;
-                return;
-            }
-        };
-    
-        var onPointerMove = function (evt) {
-            if (!startingPoint) {
-                return;
-            }
-    
-            var current = getGroundPosition(evt);
-    
-            if (!current) {
-                return;
-            }
-    
-            var diff = current.subtract(startingPoint);
-            currentMesh.position.addInPlace(diff);
-    
-            startingPoint = current;
-    
-        };
-    
-        canvas.addEventListener("pointerdown", onPointerDown, false);
-        canvas.addEventListener("pointerup", onPointerUp, false);
-        canvas.addEventListener("pointermove", onPointerMove, false);
-    
-        scene.onDispose = function () {
-            canvas.removeEventListener("pointerdown", onPointerDown);
-            canvas.removeEventListener("pointerup", onPointerUp);
-            canvas.removeEventListener("pointermove", onPointerMove);
-        };
-    
-        $('#button').click(function () {
-            var ob4 = BABYLON.Mesh.CreateSphere("obstaculo 4", 3, 8);
-            ob4.material= obswire;
-            ob4.position.y = 3;
-            ob4.position.x = Math.floor(Math.random()*(20 - (-10) + 1)) + 1;
-            ob4.position.z = Math.floor(Math.random()*(20 - (-10) + 1)) + 1;
-        });
     }
 }
 
@@ -150,10 +63,10 @@ class Ground extends Scene {
         tiledGround.showBoundingBox = true;
         tiledGround.position.y = -1;
         
-        tiledGround.physicsImpostor = new BABYLON.PhysicsImpostor(tiledGround, BABYLON.PhysicsImpostor.BoxImpostor, {
+       /* tiledGround.physicsImpostor = new BABYLON.PhysicsImpostor(tiledGround, BABYLON.PhysicsImpostor.BoxImpostor, {
             mass: 0,
             restitution: 0
-        }, scene);
+        }, scene);*/
         tiledGround.receiveShadows = true;
         //showNormals(tiledGround, 0.3, new BABYLON.Color3(1, 0, 0))
      
@@ -176,9 +89,6 @@ class Ground extends Scene {
 
         console.log(`normales: ${normals.length}`);
         return tiledGround;
-    }
-
-    getFacetNormals(){
     }
 }
 
@@ -210,12 +120,12 @@ class Particula extends Scene {
         sphereMat.emissiveColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 
         var mesh = new BABYLON.Mesh.CreateSphere(name, this.subdivs, this.size, scene);
+        mesh.ellipsoid = new BABYLON.Vector3(1,1,1);
         
-        
-        mesh.physicsImpostor = new BABYLON.PhysicsImpostor(mesh, BABYLON.PhysicsImpostor.SphereImpostor, {
-            mass: 1000,
-            restitution: 0
-        }, scene);
+        // mesh.physicsImpostor = new BABYLON.PhysicsImpostor(mesh, BABYLON.PhysicsImpostor.SphereImpostor, {
+        //     mass: 1000,
+        //     restitution: 0
+        // }, scene);
         
 
         mesh.material = sphereMat;
@@ -271,6 +181,7 @@ class Particula extends Scene {
 
     rotateParticle(rotateStep) {
         this.mesh.rotate(BABYLON.Axis.Y, rotateStep, BABYLON.Space.WORLD);
+        console.log(BABYLON.Space.WORLD);
     }
 
     avanzar(moveVector) {
