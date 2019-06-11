@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html" charset="utf-8"/>
     <title>Particulas</title>
     <!-- Link to the last version of BabylonJS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
     <script src="https://preview.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/cannon.js"></script>
     <!-- Link to the last version of BabylonJS loaders to enable loading filetypes such as .gltf -->
@@ -14,26 +14,27 @@
     <link rel="stylesheet" href="styles/estilos.css">
 </head>
 <body>
-    <div class="container">
+    <canvas id="renderCanvas"></canvas>
+    <div class="">
         <div class="title">
             <h1>SISTEMA EMERGENTE</h1>
         </div>
-        <section>
-                <canvas id="renderCanvas"></canvas>
+        <section id="particleSys">
         </section>
         <section>
             <div id="sectInfo">
             </div>
         </section>
     </div>
-    
 
-    
+
+
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/babylon.custom.js"></script>
     <script src="js/Scene.js"></script>
     <script src="js/Particula.js"></script>
     <script src="js/Ground.js"></script>
+    <script src="js/Obstaculo.js"></script>
     <script src="js/system.js"></script>
     <script src="js/main.js"></script>
 </body>

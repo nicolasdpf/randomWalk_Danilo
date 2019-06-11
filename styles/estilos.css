@@ -13,6 +13,11 @@ html, body {
     touch-action: none;
 /* display: flex; */
 }
+#particleSys {
+    display: flex;
+    height: 100%;
+    align-items: stretch;
+}
 .button{
     position: absolute; 
     right: 10px; 

@@ -10,9 +10,14 @@ window.addEventListener('DOMContentLoaded', function(){
     escena.createScene();
     escena.createLights();
     var tiledGround = new Ground(scene, "Ground1");
+    Botones(escena.scene);
     
 
-
+    var osb1 = new Obstaculo(escena.scene, 'o1', 2, 30, 60);
+    var osb2 = new Obstaculo(escena.scene, 'o2', 2, 30, 10);
+    
+    osb1.setObPosition(40, 1, 20);
+    osb2.setObPosition(40, 1, 70);
     var text1 = new BABYLON.GUI.TextBlock();
     var text2 = new BABYLON.GUI.TextBlock();
     text2.color = "red";
@@ -68,37 +73,6 @@ function stopwatch(i){
     }
 }
 
-/**
- * OBTENER paso de rotación
- * 
- * @param {*} particula 
- */
-function getRotateStep(particula){
-    var rotateStp = getRndInteger(-0.5, 0.5);
-    if( s % 5 === 0){
-        rotateStp = 0.02;
-        particula.rotateParticle(rotateStp);
-    }
-    if(s % 7 === 0){
-        rotateStp = 0.03;
-        particula.rotateParticle(rotateStp);
-    }
-    if(s % 2 === 0){
-        var choose = getRndInteger(0, 1);
-        if(choose === 1 ){
-            rotateStp = -0.02;
-            particula.rotateParticle(rotateStp);
-        }else if( choose === 0){
-            rotateStp = 0.02;
-            particula.rotateParticle(rotateStp);
-        }
-    }
-    if(s %  0.26 === 0){
-        rotateStp = -0.02;
-        particula.rotateParticle(rotateStp);
-    }
-    
-}
 
 
 /**
@@ -154,5 +128,21 @@ var showAxis = function(size) {
     var zChar = makeTextPlane("Z", "blue", size / 10);
     zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
 };
+
+function Botones(escena){
+    $('#button').remove();
+    // add the button to the playground document
+    // this is not needed if the button has already been added in the html
+    $('body').append('<button id="button" style="position: absolute; right: 10px; top: 100px;">Nuevo Obst.</button>');
+  
+    
+    /* $('#button').click(function () {
+        ArrObst.push(new Obstaculo(escena.scene,String(cantobst),2,getRndInteger(10,30),getRndInteger(0,10)));
+        ArrObst[cantobst].setObPosition(getRndInteger(0,100),1,getRndInteger(0,100));
+        cantobst++;
+    }); */
+    createObstaculo(escena);
+}
+
 
 

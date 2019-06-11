@@ -11,6 +11,8 @@
  * @param {*} particula 
  */
 var particlesPopulation = [];
+var ArrObstaculo = [];
+let cantobst  = 0;
 
 function crearParticula(escena, bool){
     if(inicializacion === true && poblacion === 0){
@@ -43,3 +45,13 @@ function vidaParticulas(){
 }
 
 
+function createObstaculo(escena){
+    ArrObstaculo.push(new Obstaculo(escena.scene,String(cantobst),2,getRndIntegerV2(10,30),getRndIntegerV2(0,10)));
+
+    ArrObstaculo[cantobst].setObPosition(getRndIntegerV2(0,100),1,getRndIntegerV2(0,100));
+    cantobst++;
+}
+
+function getRndIntegerV2(min, max){
+    return Math.floor((Math.random() * max)+min);
+}

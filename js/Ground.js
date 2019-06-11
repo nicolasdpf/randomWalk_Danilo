@@ -30,7 +30,7 @@ class Ground extends Scene {
         tiledGround.receiveShadows = true;
         //showNormals(tiledGround, 0.3, new BABYLON.Color3(1, 0, 0))
      
-        tiledGround.updateFacetData();
+        /* tiledGround.updateFacetData();
         var positions = tiledGround.getFacetLocalPositions();
         var normals = tiledGround.getFacetLocalNormals();
         var lines = [];
@@ -43,11 +43,11 @@ class Ground extends Scene {
             //datas.push(new BABYLON.Mesh.CreateBox("Data "+ i, 0.5))
             datas.push(positions[i]);
         }
-        console.log(datas);
+
         var lineSystem = BABYLON.MeshBuilder.CreateLineSystem("ls", {lines: lines}, scene);
         lineSystem.color = BABYLON.Color3.Green();
 
-        console.log(`normales: ${normals.length}`);
+        console.log(`normales: ${normals.length}`); */
         return tiledGround;
     }
 
