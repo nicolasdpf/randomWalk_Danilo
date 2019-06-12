@@ -1,27 +1,6 @@
 /*jshint esversion: 6*/
 //import * as BABYLON from 'babylonjs';
 
-var canvas = document.getElementById('renderCanvas');
-var engine = new BABYLON.Engine(canvas, true);
-var scene = new BABYLON.Scene(engine);
-
-
-var groundName = 'ground1';
-var groundWidth = 100, groundHeight = 100, divs = 2;
-
-var sistParticulas = new Array();
-var tiempo = 0;
-var iParticles = 0;
-//Variables para calcular el tiempo general de la simulación
-var s=0;
-var m=0;
-
-
-
-//Variable que hará un conteo general de los espacios creados
-var iGrounds;
-var theta = 2 * Math.PI * Math.random();
-var phi = Math.PI - 2 * Math.PI * Math.random();
 
 
 
@@ -31,19 +10,14 @@ window.addEventListener('DOMContentLoaded', function(){
     escena.createScene();
     escena.createLights();
     var tiledGround = new Ground(scene, "Ground1");
-    var particula = new Particula(escape.scene, 'PPP', 4, 2);
-    var particula2 = new Particula(escape.scene, 'PPP', 4, 2);
-    
-    var i=0;
+    Botones(escena.scene);
     
 
-
-
-
-
-
-
+    var osb1 = new Obstaculo(escena.scene, 'o1', 2, 30, 60);
+    var osb2 = new Obstaculo(escena.scene, 'o2', 2, 30, 10);
     
+    osb1.setObPosition(40, 1, 20);
+    osb2.setObPosition(40, 1, 70);
     var text1 = new BABYLON.GUI.TextBlock();
     var text2 = new BABYLON.GUI.TextBlock();
     text2.color = "red";
@@ -52,26 +26,13 @@ window.addEventListener('DOMContentLoaded', function(){
     
     
     escena.scene.registerAfterRender(function(){
+        escena.inicializarSistema(tiempo);
+        crearParticula(escena); 
+        //crearParticula(escena); 
         
-        //particula.velocidad = 0.3;
-        var posXY = agregarRecorridoParticulaLS(particula);
-
-        var moveDelta = new BABYLON.Vector3(0, 0, particula.velocidad);
-        particula.avanzar(moveDelta);
-        getRotateStep(particula);
-        particula.setParticleLimits(groundWidth, groundHeight);
-
-        //var posXY2 = agregarRecorridoParticulaLS(particula2);
-
-        var moveDelta = new BABYLON.Vector3(0, 0, particula2.velocidad);
-        particula2.avanzar(moveDelta);
-        getRotateStep(particula2);
-        particula2.setParticleLimits(groundWidth, groundHeight);
-
         text1.text = stopwatch(tiempo);
-        text2.text = `${posXY}`;
-
         tiempo ++;
+        vidaParticulas();
     });
       
 
@@ -86,9 +47,9 @@ window.addEventListener('DOMContentLoaded', function(){
     text1.textHorizontalAlignment = 2;
     text1.textVerticalAlignment = 1;
     advancedTexture.addControl(text1);   
-
-    showAxis(100);
 });
+
+
 
 function stopwatch(i){
     var fps = i;
@@ -112,37 +73,6 @@ function stopwatch(i){
     }
 }
 
-/**
- * OBTENER paso de rotación
- * 
- * @param {*} particula 
- */
-function getRotateStep(particula){
-    var rotateStp = getRndInteger(-0.5, 0.5);
-    if( s % 5 === 0){
-        rotateStp = 0.02;
-        particula.rotateParticle(rotateStp);
-    }
-    if(s % 7 === 0){
-        rotateStp = 0.03;
-        particula.rotateParticle(rotateStp);
-    }
-    if(s % 2 === 0){
-        var choose = getRndInteger(0, 1);
-        if(choose === 1 ){
-            rotateStp = -0.02;
-            particula.rotateParticle(rotateStp);
-        }else if( choose === 0){
-            rotateStp = 0.02;
-            particula.rotateParticle(rotateStp);
-        }
-    }
-    if(s %  0.26 === 0){
-        rotateStp = -0.02;
-        particula.rotateParticle(rotateStp);
-    }
-    
-}
 
 
 /**
@@ -198,5 +128,21 @@ var showAxis = function(size) {
     var zChar = makeTextPlane("Z", "blue", size / 10);
     zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
 };
+
+function Botones(escena){
+    $('#button').remove();
+    // add the button to the playground document
+    // this is not needed if the button has already been added in the html
+    $('body').append('<button id="button" style="position: absolute; right: 10px; top: 100px;">Nuevo Obst.</button>');
+  
+    
+    /* $('#button').click(function () {
+        ArrObst.push(new Obstaculo(escena.scene,String(cantobst),2,getRndInteger(10,30),getRndInteger(0,10)));
+        ArrObst[cantobst].setObPosition(getRndInteger(0,100),1,getRndInteger(0,100));
+        cantobst++;
+    }); */
+    createObstaculo(escena);
+}
+
 
 

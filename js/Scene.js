@@ -1,10 +1,35 @@
+var canvas = document.getElementById('renderCanvas');
+var engine = new BABYLON.Engine(canvas, true);
+var scene = new BABYLON.Scene(engine);
+
+
+var groundName = 'ground1';
+var groundWidth = 100, groundHeight = 100, divs = 2;
+
+var sistParticulas = new Array();
+var tiempo = 0;
+var iParticles = 0;
+//Variables para calcular el tiempo general de la simulación
+var s=0;
+var m=0;
+
+
+
+//Variable que hará un conteo general de los espacios creados
+var iGrounds;
+var theta = 2 * Math.PI * Math.random();
+var phi = Math.PI - 2 * Math.PI * Math.random();
+
+
+var inicializacion = false;
+var poblacion = 0;
+
 class Scene {
     constructor(scene, canvas, engine) {
         this.scene = scene;
         this.canvas = canvas;
         this.engine = engine;
         this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-100, 200, 0), scene);
-        //this.data = this.createData();
     }
     createScene() {
         var gravityVector = new BABYLON.Vector3(0, -9.81, 0);
@@ -15,8 +40,12 @@ class Scene {
         this.camera.setTarget(BABYLON.Vector3.Zero());
         // This attaches the camera to the canvas
         this.camera.attachControl(canvas, true);
+        scene.clearColor = new BABYLON.Color3(0,0,0);
 
         //scene.enablePhysics(gravityVector, physicsPlugin);
+
+
+        this.isAlive = true;
 
         return scene;
     }
@@ -36,173 +65,16 @@ class Scene {
 
         return shadowGenerator;
     }
-}
 
-class Ground extends Scene {
-    constructor(scene, name){
-        super(scene);
-        this.name = name;
-        this.meshGround = this.createTiledGround();
-    }
-
-    createTiledGround() {
-        var xmin = -1;
-        var zmin = -1;
-        var xmax = 101;
-        var zmax = 101;
-        var precision = {
-            "w": 0,
-            "h": 0
-        };
-        var subdivisions = {
-            'h': 20,
-            'w': 20
-        };
-
-        var tiledGround = new BABYLON.Mesh.CreateTiledGround("name", xmin, zmin, xmax, zmax, subdivisions, precision, scene);
-        tiledGround.showBoundingBox = true;
-        tiledGround.position.y = -1;
-        
-       /* tiledGround.physicsImpostor = new BABYLON.PhysicsImpostor(tiledGround, BABYLON.PhysicsImpostor.BoxImpostor, {
-            mass: 0,
-            restitution: 0
-        }, scene);*/
-        tiledGround.receiveShadows = true;
-        //showNormals(tiledGround, 0.3, new BABYLON.Color3(1, 0, 0))
-     
-        tiledGround.updateFacetData();
-        var positions = tiledGround.getFacetLocalPositions();
-        var normals = tiledGround.getFacetLocalNormals();
-        var lines = [];
-
-        var datas = [];
-        for (var i = 0; i < positions.length; i++) {
-            var line = [ positions[i], positions[i].add(normals[i]) ];
-            lines.push(line);
-
-            //datas.push(new BABYLON.Mesh.CreateBox("Data "+ i, 0.5))
-            datas.push(positions[i]);
+    inicializarSistema(tiempo){
+        if(tiempo === 0 && this.poblacion === 0){
+            console.log("todas las variables inicializadas");
         }
-        console.log(datas);
-        var lineSystem = BABYLON.MeshBuilder.CreateLineSystem("ls", {lines: lines}, scene);
-        lineSystem.color = BABYLON.Color3.Green();
-
-        console.log(`normales: ${normals.length}`);
-        return tiledGround;
-    }
-}
-
-//PARTICULA
-//_______________________________________________________________________________________________________________________________________________
-//_______________________________________________________________________________________________________________________________________________
-//_______________________________________________________________________________________________________________________________________________
-class Particula extends Scene {
-
-    constructor(scene, name, subdivs, size) {
-        super(scene);
-        this.name = name;
-        this.subdivs = subdivs;
-        this.size = size;
-        this.mesh = this.crearParticula();
-        this.meshLabel = this.meshLabelName();
-        this.recorrido = 0;
-        this.velocidad = 0.3;
-    }
-
-
-    crearParticula() {
-        this.viva = true;
-        var sphereMat = new BABYLON.StandardMaterial("ground", scene);
-
-        // Material y Color
-        sphereMat.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random()); //(0.4, 0.4, 0.4)
-        sphereMat.specularColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-        sphereMat.emissiveColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-
-        var mesh = new BABYLON.Mesh.CreateSphere(name, this.subdivs, this.size, scene);
-        mesh.ellipsoid = new BABYLON.Vector3(1,1,1);
-        
-        // mesh.physicsImpostor = new BABYLON.PhysicsImpostor(mesh, BABYLON.PhysicsImpostor.SphereImpostor, {
-        //     mass: 1000,
-        //     restitution: 0
-        // }, scene);
-        
-
-        mesh.material = sphereMat;
-        // mesh.position.y =-10;
-        mesh.position = new BABYLON.Vector3(getRndInteger(-1, 10), 1, getRndInteger(-10, 10));
-        var shadowGenerator = this.generateShadows();
-        shadowGenerator.addShadowCaster(mesh);
-        var localOrigin = localAxes(3);
-        localOrigin.parent = mesh;
-        mesh.receiveShadows = true;
-
-        return mesh;
-    }
-    meshLabelName() {
-        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        advancedTexture.layer.layerMask = 2;
-        var label = new BABYLON.GUI.Rectangle("label for " + this.name);
-        label.background = "black"
-        label.height = "30px";
-        label.alpha = 0.5;
-        label.width = "50px";
-        label.cornerRadius = 20;
-        label.thickness = 1;
-        label.linkOffsetY = 30;
-        advancedTexture.addControl(label);
-        label.linkWithMesh(this.mesh);
-
-        var text1 = new BABYLON.GUI.TextBlock();
-        text1.text = this.name;
-        text1.color = "white";
-        label.addControl(text1);
-    }
-
-    setPosition(x = 0, y = 0, z = 0) {
-        this.mesh.position.x = x;
-        this.mesh.position.y = y;
-        this.mesh.position.z = z;
-
-    }
-    getPosition() {
-        var pX = this.mesh.position.x;
-        var pY = this.mesh.position.y;
-        var pZ = this.mesh.position.z;
-        //console.log(`${this.mesh.position.x}, ${this.mesh.position.y}, ${this.mesh.position.z}`)
-        return new BABYLON.Vector3(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z);
-    }
-
-    transformPerQuat(vec) {
-        var mymatrix = new BABYLON.Matrix();
-        this.mesh.rotationQuaternion.toRotationMatrix(mymatrix);
-        return BABYLON.Vector3.TransformNormal(vec, mymatrix);
-    }
-
-    rotateParticle(rotateStep) {
-        this.mesh.rotate(BABYLON.Axis.Y, rotateStep, BABYLON.Space.WORLD);
-        console.log(BABYLON.Space.WORLD);
-    }
-
-    avanzar(moveVector) {
-        this.mesh.moveWithCollisions(this.transformPerQuat(moveVector));
-        this.recorrido += 1;
-        //console.log(this.recorrido);
-    }
-
-    setParticleLimits(groundWidth, groundHeight) {
-        if (this.mesh.position.z >= groundHeight || this.mesh.position.z < 0) {
-            this.rotateParticle(10);
-        } else if (this.mesh.position.x >= groundWidth || this.mesh.position.x < 0) {
-            this.rotateParticle(10);
+        if(tiempo === 120 && inicializacion === false){
+            console.log("Dando vida a primera particula");
+            inicializacion = true;
         }
     }
-    memoriaRecorrido(){
-        var position = this.getPosition();
-        console.log(`${round(position.x, 3)}, ${round(position.y, 3)}, ${round(position.z, 3)}`);
-
-    }
-
 }
 
 function round(num, decimales = 2) {
@@ -217,7 +89,6 @@ function round(num, decimales = 2) {
     num = num.toString().split('e');
     return signo * (num[0] + 'e' + (num[1] ? (+num[1] - decimales) : -decimales));
 }
-
 
 //_______________________________________________________________________________________________________________________________________________
 //_______________________________________________________________________________________________________________________________________________
