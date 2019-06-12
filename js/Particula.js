@@ -160,6 +160,7 @@ class Particula extends Scene {
                 }
                 var vecAvance = new BABYLON.Vector3(0, 0, this.velocidad);
                 this.avanzar(vecAvance);
+                
                 break;
             case 1:
                 this.interacciones += 1;
@@ -227,10 +228,7 @@ class Particula extends Scene {
 
     rotateParticle(rotateStep) {
         var rotation = this.mesh.rotate(BABYLON.Axis.Y, rotateStep, BABYLON.Space.WORLD);
-        //console.log(rotation);
         this.mesh.rotation =new BABYLON.Vector3 (0,0,0);
-        //console.log(`X: ${this.mesh.rotation.x}, Z: ${this.mesh.rotation.y}`);
-        
     }
 
     avanzar(moveVector) {

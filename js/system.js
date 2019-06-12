@@ -28,6 +28,19 @@ function crearParticula(escena, bool){
         poblacion += 1;
         particlesPopulation.push(particula);   
     }
+
+    if(s % 10 === 0 && tiempo % 60 == 1){
+        var particula = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
+        console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
+        poblacion += 1;
+        particlesPopulation.push(particula);   
+    }
+    if(poblacion % 5 == 0 ){
+        var particula = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
+        console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
+        poblacion += 1;
+        particlesPopulation.push(particula);
+    }
 }
 
 function vidaParticulas(){
@@ -48,7 +61,7 @@ function vidaParticulas(){
 function createObstaculo(escena){
     ArrObstaculo.push(new Obstaculo(escena.scene,String(cantobst),2,getRndIntegerV2(10,30),getRndIntegerV2(0,10)));
 
-    ArrObstaculo[cantobst].setObPosition(getRndIntegerV2(0,100),1,getRndIntegerV2(0,100));
+    ArrObstaculo[cantobst].setObPosition(getRndIntegerV2(0,groundWidth),1,getRndIntegerV2(0,groundHeight));
     cantobst++;
 }
 

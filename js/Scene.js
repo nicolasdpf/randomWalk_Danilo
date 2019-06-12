@@ -4,7 +4,7 @@ var scene = new BABYLON.Scene(engine);
 
 
 var groundName = 'ground1';
-var groundWidth = 100, groundHeight = 100, divs = 2;
+var groundWidth = 200, groundHeight = 200, divs = 2;
 
 var sistParticulas = new Array();
 var tiempo = 0;
@@ -29,7 +29,7 @@ class Scene {
         this.scene = scene;
         this.canvas = canvas;
         this.engine = engine;
-        this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-100, 200, 0), scene);
+        this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(250, 500, 250), scene);
     }
     createScene() {
         var gravityVector = new BABYLON.Vector3(0, -9.81, 0);
@@ -37,12 +37,12 @@ class Scene {
         //camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-100, 200, 0), scene);
 
         // This targets the camera to scene origin
-        this.camera.setTarget(BABYLON.Vector3.Zero());
+        this.camera.setTarget(new BABYLON.Vector3(250, 0, 250));
         // This attaches the camera to the canvas
         this.camera.attachControl(canvas, true);
         scene.clearColor = new BABYLON.Color3(0,0,0);
 
-        //scene.enablePhysics(gravityVector, physicsPlugin);
+        scene.enablePhysics(gravityVector, physicsPlugin);
 
 
         this.isAlive = true;

@@ -8,8 +8,8 @@ class Ground extends Scene {
     createTiledGround() {
         var xmin = -1;
         var zmin = -1;
-        var xmax = 101;
-        var zmax = 101;
+        var xmax = 501;
+        var zmax = 501;
         var precision = {
             "w": 0,
             "h": 0

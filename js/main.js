@@ -29,7 +29,7 @@ window.addEventListener('DOMContentLoaded', function(){
         escena.inicializarSistema(tiempo);
         crearParticula(escena); 
         //crearParticula(escena); 
-        
+        console.log(tiempo);
         text1.text = stopwatch(tiempo);
         tiempo ++;
         vidaParticulas();
@@ -136,12 +136,13 @@ function Botones(escena){
     $('body').append('<button id="button" style="position: absolute; right: 10px; top: 100px;">Nuevo Obst.</button>');
   
     
-    /* $('#button').click(function () {
-        ArrObst.push(new Obstaculo(escena.scene,String(cantobst),2,getRndInteger(10,30),getRndInteger(0,10)));
+    $('#button').click(function () {
+        /* ArrObst.push(new Obstaculo(escena.scene,String(cantobst),2,getRndInteger(10,30),getRndInteger(0,10)));
         ArrObst[cantobst].setObPosition(getRndInteger(0,100),1,getRndInteger(0,100));
-        cantobst++;
-    }); */
-    createObstaculo(escena);
+        cantobst++; */
+
+        createObstaculo(escena);
+    });
 }
 
 
