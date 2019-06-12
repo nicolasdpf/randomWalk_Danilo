@@ -14,7 +14,7 @@ var particlesPopulation = [];
 var ArrObstaculo = [];
 let cantobst  = 0;
 
-function crearParticula(escena, bool){
+function crearParticula(escena){
     if(inicializacion === true && poblacion === 0){
         var particula = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
         //console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
@@ -35,7 +35,18 @@ function crearParticula(escena, bool){
         //console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
         poblacion += 1;
         particlesPopulation.push(particula);
+    } 
+ 
+    for(var i = 0; i< particlesPopulation.length; i++){
+        if(particlesPopulation[i].recorrido % 200 === 0){
+            if(poblacion % 3 == 0 ){
+                var particula = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
+                //console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
+                poblacion += 1;
+                particlesPopulation.push(particula);
+        }
     }
+    } 
 }
 
 

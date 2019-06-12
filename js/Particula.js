@@ -138,12 +138,14 @@ class Particula extends Scene {
         
         ///Se mueren 
         if(this.edad === this.edadMaxima){
+            this.death = true;
             this.setModo(4);
         }
+        console.log(this.recorrido);
     }
     edadMaxima(){
-        let random = getRndInteger(120, 150);
-        return random;
+        let random = Math.random() * 100;
+        return random.toFixed(0);
     }
     detectCollisions(visitante){
         if(this.toro.intersectsMesh(visitante.toro, true)){
@@ -166,6 +168,10 @@ class Particula extends Scene {
     setModo(modo){
         switch (modo) {
             case 0:
+                if(this.death){
+                    this.setModo(4);
+                    break;
+                }
                  if(this.recorrido % 30 == 0){
                      this.setOrientation();
                  }
@@ -181,11 +187,19 @@ class Particula extends Scene {
                 
                 break;
             case 1:
+                if(this.death){
+                    this.setModo(4);
+                    break;
+                }
                 this.interacciones += 1;
                 this.rotateParticle(10);
                 this.setModo(0);
                 break;
             case 2:
+                if(this.death){
+                    this.setModo(4);
+                    break;
+                }
                 if(this.edad % 10 === 0){
                     if(this.edadFPS === 61){
                         this.interacciones += 1;
@@ -201,6 +215,10 @@ class Particula extends Scene {
                 this.setModo(0);     
                 break;
             case 3:
+                if(this.death){
+                    this.setModo(4);
+                    break;
+                }
                 if(this.edad % 10 === 0){
                     if(this.edadFPS === 61){
                         this.interacciones += 1;
@@ -219,6 +237,7 @@ class Particula extends Scene {
                 this.velocidad = 0;
                 this.mesh.dispose();
                 this.toro.dispose();
+                //poblacion -= 1;
                 break;
             default:
                 break;
