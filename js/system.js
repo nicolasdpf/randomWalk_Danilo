@@ -17,27 +17,22 @@ let cantobst  = 0;
 function crearParticula(escena, bool){
     if(inicializacion === true && poblacion === 0){
         var particula = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
-        console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
+        //console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
         poblacion += 1;
         particlesPopulation.push(particula);   
     }
 
-    if(inicializacion === true && poblacion < 3){
-        var particula = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
-        console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
-        poblacion += 1;
-        particlesPopulation.push(particula);   
-    }
 
-    if(s % 10 === 0 && tiempo % 60 == 1){
+
+    if(s % 5 === 0 && tiempo % 60 == 1){
         var particula = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
-        console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
+        //console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
         poblacion += 1;
         particlesPopulation.push(particula);   
     }
-    if(poblacion % 5 == 0 ){
+    if(poblacion % 4 == 0 ){
         var particula = new Particula(escena.scene, 'P' + poblacion, 16, 2, s);
-        console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
+        //console.log("Particula creada en el segundo:", particula.segundoDeNacimiento);
         poblacion += 1;
         particlesPopulation.push(particula);
     }
@@ -51,17 +46,26 @@ function vidaParticulas(){
                 if(i != j){
                     particlesPopulation[i].detectCollisions(particlesPopulation[j]);
                     particlesPopulation[j].detectCollisions(particlesPopulation[i]);
+
                 }
             }
         }
     }
+    if(particlesPopulation.length != 0 && ArrObstaculo.length != 0){
+        for(var i = 0; i < particlesPopulation.length; i++){
+            for(var j = 0; j < ArrObstaculo.length; j++){
+                particlesPopulation[i].detectObstaculo(ArrObstaculo[j].mesh);
+            }
+        }
+    }
+
 }
 
 
 function createObstaculo(escena){
-    ArrObstaculo.push(new Obstaculo(escena.scene,String(cantobst),2,getRndIntegerV2(10,30),getRndIntegerV2(0,10)));
+    ArrObstaculo.push(new Obstaculo(escena.scene,String(cantobst), 2,getRndIntegerV2(10,30),getRndIntegerV2(0,10)));
 
-    ArrObstaculo[cantobst].setObPosition(getRndIntegerV2(0,groundWidth),1,getRndIntegerV2(0,groundHeight));
+    ArrObstaculo[cantobst].setObPosition(50 + getRndIntegerV2(0,groundWidth),1,50+ getRndIntegerV2(0,groundHeight));
     cantobst++;
 }
 

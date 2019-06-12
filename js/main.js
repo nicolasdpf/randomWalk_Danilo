@@ -9,30 +9,32 @@ window.addEventListener('DOMContentLoaded', function(){
     var escena = new Scene(scene, canvas, engine);
     escena.createScene();
     escena.createLights();
-    var tiledGround = new Ground(scene, "Ground1");
+    var tiledGround = new Ground(scene, "Ground1", 1000, 1000, -1);
     Botones(escena.scene);
     
 
-    var osb1 = new Obstaculo(escena.scene, 'o1', 2, 30, 60);
-    var osb2 = new Obstaculo(escena.scene, 'o2', 2, 30, 10);
-    
-    osb1.setObPosition(40, 1, 20);
-    osb2.setObPosition(40, 1, 70);
     var text1 = new BABYLON.GUI.TextBlock();
     var text2 = new BABYLON.GUI.TextBlock();
     text2.color = "red";
     text1.color = "white";
     text1.fontSize = 24;
+    text2.fontSize = 24;
     
     
     escena.scene.registerAfterRender(function(){
         escena.inicializarSistema(tiempo);
         crearParticula(escena); 
-        //crearParticula(escena); 
-        console.log(tiempo);
         text1.text = stopwatch(tiempo);
+        text2.text = "Poblacion Total: " + particlesPopulation.length;
         tiempo ++;
         vidaParticulas();
+        console.log(particlesPopulation.length);
+        if(particlesPopulation.length % 10 == 0 && tiempo % 60 == 1 ){
+            groundHeight += 10;
+            groundWidth += 10;
+            console.log(groundHeight);
+            console.log(groundWidth);
+        }
     });
       
 
@@ -47,6 +49,9 @@ window.addEventListener('DOMContentLoaded', function(){
     text1.textHorizontalAlignment = 2;
     text1.textVerticalAlignment = 1;
     advancedTexture.addControl(text1);   
+    text2.textHorizontalAlignment = 2;
+    text2.textVerticalAlignment = 0;
+    advancedTexture.addControl(text2);   
 });
 
 

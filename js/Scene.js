@@ -29,7 +29,7 @@ class Scene {
         this.scene = scene;
         this.canvas = canvas;
         this.engine = engine;
-        this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(250, 500, 250), scene);
+        this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(250, 650, 250), scene);
     }
     createScene() {
         var gravityVector = new BABYLON.Vector3(0, -9.81, 0);
@@ -40,7 +40,7 @@ class Scene {
         this.camera.setTarget(new BABYLON.Vector3(250, 0, 250));
         // This attaches the camera to the canvas
         this.camera.attachControl(canvas, true);
-        scene.clearColor = new BABYLON.Color3(0,0,0);
+        scene.clearColor = new BABYLON.Color3(1,1,1);
 
         scene.enablePhysics(gravityVector, physicsPlugin);
 
@@ -68,10 +68,10 @@ class Scene {
 
     inicializarSistema(tiempo){
         if(tiempo === 0 && this.poblacion === 0){
-            console.log("todas las variables inicializadas");
+            //console.log("todas las variables inicializadas");
         }
         if(tiempo === 120 && inicializacion === false){
-            console.log("Dando vida a primera particula");
+            //console.log("Dando vida a primera particula");
             inicializacion = true;
         }
     }

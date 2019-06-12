@@ -1,4 +1,5 @@
 var arrDistancias = [], path3D;
+//let temRecorrido;
 class Particula extends Scene {
 
     constructor(scene, name, subdivs, size, segundoDeNacimiento) {
@@ -15,9 +16,11 @@ class Particula extends Scene {
         this.edad = 0;
         this.edadFPS = 0;
         this.recorrido = 0;
+        this.temRecorrido = 0;
         this.segundoDeNacimiento = segundoDeNacimiento;
         this.interacciones = 0;
         this.boolInteractuando = false;
+        this.boolInteractuandoConObstaculo = false;
     }
 
 
@@ -91,28 +94,10 @@ class Particula extends Scene {
                 var distances = path3D.getDistances();
                 distances = distances.pop();
                 this.recorrido = round(distances, 1);
-                console.log(this.recorrido);
+                //console.log(this.recorrido);
             }
         }
     }
-
-    evaluarOrientacion(){
-        var random = getRndInteger(0, 2);
-        switch(random){
-            case 0:
-                //Siga al frente 
-                rotateParticle(0);
-                break;
-            case 1: 
-                //Derecha
-                rotateParticle(getRndInteger(0, 45));
-                break;
-            case 2:
-                //izquierda
-                rotateParticle(getRndInteger(0, -45));
-        }
-    }
-
 
     inicializarVariables(){
         this.agregarDistanciaArray();
@@ -120,6 +105,7 @@ class Particula extends Scene {
         this.calcularRecorridoTotal();
         if(this.edad >= 0){
             // console.log(`particula debe entrar en modo lineal`);
+            this.temRecorrido = 0;
             this.setModo(0);
         }
 
@@ -137,7 +123,11 @@ class Particula extends Scene {
         }else{
             this.setModo(0);
         }
-
+        /* if(this.boolInteractuandoConObstaculo){
+            this.setModo(3);
+        }else{
+            this.setModo(0);
+        } */
 
     }
     detectCollisions(visitante){
@@ -148,10 +138,23 @@ class Particula extends Scene {
             this.boolInteractuando = false;
         }
     }
-    
+    detectObstaculo(visitante){
+        if(this.toro.intersectsMesh(visitante, true)){
+            
+            //this.boolInteractuandoConObstaculo = true;
+            this.setModo(3);
+            console.log(`particula ${this.name} Colisiona con obstaculo`);
+        }else{
+            this.boolInteractuandoConObstaculo = false;
+        }
+    }
     setModo(modo){
         switch (modo) {
             case 0:
+                 if(this.recorrido % 30 == 0){
+                     this.setOrientation();
+                 }
+                
                 //this.disminuirVelocidad(this.velocidad);        
                 if(this.velocidad < this.velMax){
                     this.velocidad += 0.01;
@@ -172,6 +175,22 @@ class Particula extends Scene {
                     if(this.edadFPS === 61){
                         this.interacciones += 1;
                         this.velMax = 0.001;
+                    }
+                }
+                if(this.velocidad > this.velMin){
+                    this.velocidad -= 0.03;
+                }else{
+                    this.velocidad = this.velMin;
+                }
+                this.setOrientation(3);
+                this.setModo(0);     
+                break;
+            case 3:
+                if(this.edad % 10 === 0){
+                    if(this.edadFPS === 61){
+                        this.interacciones += 1;
+                        this.velMax = 0.001;
+                        this.setOrientation(4);
                     }
                 }
                 if(this.velocidad > this.velMin){
@@ -241,14 +260,42 @@ class Particula extends Scene {
         console.log(`${round(position.x, 3)}, ${round(position.y, 3)}, ${round(position.z, 3)}`);
     }
 
-    
+    setOrientation(tem = getRndInteger(1, 3) ){
+        switch (tem) {
+            //Izquierda
+            case 1:
+                this.rotateParticle(-7);
+                break;
+            //Derecha
+            case 2:
+                this.rotateParticle(7);
+                break;
+            //Radical
+            case 3:
+                this.rotateParticle(45);
+                break;
+            case 4:
+                let temp2= getRndInteger(1, 2);
+                switch (temp2) {
+                    case 1:
+                        this.rotateParticle(180);
+                        break;
+                    case 2:
+                        this.rotateParticle(-180);
+                        break;
+                    default:
+                        break;
+                }
+            default:
+                break;
+        }
+    }
     printInformation(particle){
         var seccion = document.getElementById("sectInfo");
         
         var div = document.createElement("div");
         div.className = particle.name;
         seccion.appendChild(div);
-    
     }
 }
 
