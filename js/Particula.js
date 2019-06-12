@@ -8,19 +8,22 @@ class Particula extends Scene {
         this.subdivs = subdivs;
         this.size = size;
         this.mesh = this.crearParticula();
-        this.meshLabel = this.meshLabelName();
+        //this.meshLabel = this.meshLabelName(0.3);
         this.toro = this.crearToro();
         this.velocidad = 0;
         this.velMax = 0.5;
         this.velMin = 0.02;
         this.edad = 0;
         this.edadFPS = 0;
+        this.edadMaxima = this.edadMaxima();
         this.recorrido = 0;
         this.temRecorrido = 0;
         this.segundoDeNacimiento = segundoDeNacimiento;
         this.interacciones = 0;
         this.boolInteractuando = false;
         this.boolInteractuandoConObstaculo = false;
+        this.dataParticle = [];
+        this.death = false;
     }
 
 
@@ -43,8 +46,8 @@ class Particula extends Scene {
 
         mesh.material = sphereMat;
         mesh.position = new BABYLON.Vector3(getRndInteger(-1, 10), 1, getRndInteger(-10, 10));
-        var localOrigin = localAxes(3);
-        localOrigin.parent = mesh;
+        //var localOrigin = localAxes(3);
+        //localOrigin.parent = mesh;
 
         return mesh;
     }
@@ -58,6 +61,7 @@ class Particula extends Scene {
         torusMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
         torusMat.specularColor = new BABYLON.Color3(0, 1, 0);
         torusMat.emissiveColor = new BABYLON.Color3(0, 1, 0);
+        torusMat.alpha = 0.0;
         torus.material = torusMat;
         torus.parent = this.mesh;
 
@@ -86,6 +90,14 @@ class Particula extends Scene {
         }
     }
     
+    agregarDato(){
+        if(this.edadFPS === 60){
+            this.dataParticle.push(new Dato(this.scene, String(cantDat + 1), 0.5, 0 ));
+            //this.dataParticle[cantDat].setDtPosition(this.mesh.position.x, this.mesh.position.y, this.position.z);
+            cantDat++;
+
+        }
+    }
 
 
     calcularRecorridoTotal(){
@@ -123,12 +135,15 @@ class Particula extends Scene {
         }else{
             this.setModo(0);
         }
-        /* if(this.boolInteractuandoConObstaculo){
-            this.setModo(3);
-        }else{
-            this.setModo(0);
-        } */
-
+        
+        ///Se mueren 
+        if(this.edad === this.edadMaxima){
+            this.setModo(4);
+        }
+    }
+    edadMaxima(){
+        let random = getRndInteger(120, 150);
+        return random;
     }
     detectCollisions(visitante){
         if(this.toro.intersectsMesh(visitante.toro, true)){
@@ -143,7 +158,7 @@ class Particula extends Scene {
             
             //this.boolInteractuandoConObstaculo = true;
             this.setModo(3);
-            console.log(`particula ${this.name} Colisiona con obstaculo`);
+            //console.log(`particula ${this.name} Colisiona con obstaculo`);
         }else{
             this.boolInteractuandoConObstaculo = false;
         }
@@ -200,6 +215,11 @@ class Particula extends Scene {
                 }
                 this.setModo(0);     
                 break;
+            case 4:
+                this.velocidad = 0;
+                this.mesh.dispose();
+                this.toro.dispose();
+                break;
             default:
                 break;
         }
@@ -211,13 +231,13 @@ class Particula extends Scene {
             this.velocidad -= 0.005;
         } while (this.velocidad < velocidad/ 2);
     }
-    meshLabelName() {
+    meshLabelName(alpha) {
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         advancedTexture.layer.layerMask = 2;
         var label = new BABYLON.GUI.Rectangle("label for " + this.name);
         label.background = "black"
         label.height = "30px";
-        label.alpha = 0.3;
+        label.alpha = alpha;
         label.width = "50px";
         label.cornerRadius = 20;
         label.thickness = 1;

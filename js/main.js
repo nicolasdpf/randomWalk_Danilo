@@ -28,12 +28,12 @@ window.addEventListener('DOMContentLoaded', function(){
         text2.text = "Poblacion Total: " + particlesPopulation.length;
         tiempo ++;
         vidaParticulas();
-        console.log(particlesPopulation.length);
+        //console.log(particlesPopulation.length);
         if(particlesPopulation.length % 10 == 0 && tiempo % 60 == 1 ){
-            groundHeight += 10;
-            groundWidth += 10;
-            console.log(groundHeight);
-            console.log(groundWidth);
+            groundHeight += 20;
+            groundWidth += 20;
+            //console.log(groundHeight);
+            //console.log(groundWidth);
         }
     });
       
@@ -97,7 +97,7 @@ function agregarRecorridoParticulaLS(particula){
     }
 }
 
-
+/* 
 var showAxis = function(size) {
     var makeTextPlane = function(text, color, size) {
     var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
@@ -133,7 +133,7 @@ var showAxis = function(size) {
     var zChar = makeTextPlane("Z", "blue", size / 10);
     zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
 };
-
+ */
 function Botones(escena){
     $('#button').remove();
     // add the button to the playground document

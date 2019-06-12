@@ -24,6 +24,11 @@ var phi = Math.PI - 2 * Math.PI * Math.random();
 var inicializacion = false;
 var poblacion = 0;
 
+let ArrDato;
+let cantDat = 1;
+let Go1 = {};
+let Go2 = {};
+
 class Scene {
     constructor(scene, canvas, engine) {
         this.scene = scene;
